@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/flash_background">
+
+        <ImageView
+            android:id="@+id/arrow_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="28dp"
+            android:layout_marginTop="40dp"
+            android:padding="10dp"
+            android:src="@mipmap/ic_back"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Network Test"
+            android:textColor="#FFFFFFFF"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="@id/arrow_back"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/arrow_back" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/game_speed_cl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:background="@drawable/wifi_info_background"
+            android:paddingStart="20dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="20dp"
+            android:paddingBottom="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/arrow_back">
+
+            <TextView
+                android:id="@+id/game_speed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Game Speed"
+                android:textColor="#FFFFFFFF"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/game_src"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:src="@mipmap/network_game"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/game_speed" />
+
+            <TextView
+                android:id="@+id/game_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="The game can be played normally"
+                android:textColor="#FFFFFFFF"
+                android:textSize="13sp"
+                app:layout_constraintBottom_toBottomOf="@id/game_src"
+                app:layout_constraintStart_toEndOf="@id/game_src"
+                app:layout_constraintTop_toTopOf="@id/game_src" />
+
+            <TextView
+                android:id="@+id/router_speed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="26dp"
+                android:text="-1ms"
+                android:textColor="#FFFFFFFF"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="@id/game_src"
+                app:layout_constraintTop_toBottomOf="@id/game_src" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Router"
+                android:textColor="#FFFFFFFF"
+                android:textSize="10sp"
+                app:layout_constraintEnd_toEndOf="@id/router_speed"
+                app:layout_constraintStart_toStartOf="@id/router_speed"
+                app:layout_constraintTop_toBottomOf="@id/router_speed" />
+
+            <TextView
+                android:id="@+id/total_game_speed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="26dp"
+                android:text="-1ms"
+                android:textColor="#FFFFFFFF"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/game_src" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Total game"
+                android:textColor="#FFFFFFFF"
+                android:textSize="10sp"
+                app:layout_constraintEnd_toEndOf="@id/total_game_speed"
+                app:layout_constraintStart_toStartOf="@id/total_game_speed"
+                app:layout_constraintTop_toBottomOf="@id/total_game_speed" />
+
+            <TextView
+                android:id="@+id/cn_speed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="26dp"
+                android:text="-1ms"
+                android:textColor="#FFFFFFFF"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toTopOf="@id/community_network_speed"
+                app:layout_constraintEnd_toEndOf="@id/community_network_speed"
+                app:layout_constraintStart_toStartOf="@id/community_network_speed" />
+
+            <TextView
+                android:id="@+id/community_network_speed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Community network"
+                android:textColor="#FFFFFFFF"
+                android:textSize="10sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/router_speed" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <FrameLayout
+            android:visibility="gone"
+            android:id="@+id/ad_fl"
+            android:layout_width="match_parent"
+            android:layout_height="132dp"
+            android:layout_margin="16dp"
+            android:background="@mipmap/ad_background"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/game_speed_cl" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/video_speed_cl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:background="@drawable/wifi_info_background"
+            android:paddingStart="20dp"
+            android:paddingTop="16dp"
+            android:paddingEnd="20dp"
+            android:paddingBottom="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ad_fl">
+
+            <TextView
+                android:id="@+id/video_speed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Game Speed"
+                android:textColor="#FFFFFFFF"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/video_src"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:src="@mipmap/network_video"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/video_speed" />
+
+            <TextView
+                android:id="@+id/video_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="Accordng to your speed,We recommend \n1080P videos"
+                android:textColor="#FFFFFFFF"
+                android:textSize="13sp"
+                app:layout_constraintBottom_toBottomOf="@id/video_src"
+                app:layout_constraintStart_toEndOf="@id/video_src"
+                app:layout_constraintTop_toTopOf="@id/video_src" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/video_src">
+
+                <TextView
+                    android:id="@+id/tv_360"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:gravity="center"
+                    android:text="360P"
+                    android:textColor="#FF34CC32"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toStartOf="@id/tv_720"
+                    app:layout_constraintHorizontal_weight="1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tv_720"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:gravity="center"
+                    android:text="7200P"
+                    android:textColor="#FF34CC32"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toStartOf="@id/tv_1080"
+                    app:layout_constraintHorizontal_weight="1"
+                    app:layout_constraintStart_toEndOf="@id/tv_360"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tv_1080"
+
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:gravity="center"
+                    android:text="1080"
+                    android:textColor="#FF34CC32"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toStartOf="@id/tv_4k"
+                    app:layout_constraintHorizontal_weight="1"
+                    app:layout_constraintStart_toEndOf="@id/tv_720"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tv_4k"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:gravity="center"
+                    android:text="4k"
+                    android:textColor="#FF34CC32"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_weight="1"
+                    app:layout_constraintStart_toEndOf="@id/tv_1080"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/iv_360"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_marginBottom="10dp"
+                    android:src="@drawable/network_green"
+                    app:layout_constraintBottom_toTopOf="@id/tv_360"
+                    app:layout_constraintEnd_toEndOf="@id/tv_360"
+                    app:layout_constraintStart_toStartOf="@id/tv_360" />
+
+                <ImageView
+                    android:id="@+id/iv_720"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_marginBottom="10dp"
+                    android:src="@drawable/network_green"
+                    app:layout_constraintBottom_toTopOf="@id/tv_720"
+                    app:layout_constraintEnd_toEndOf="@id/tv_720"
+                    app:layout_constraintStart_toStartOf="@id/tv_720" />
+
+                <ImageView
+                    android:id="@+id/iv_1080"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_marginBottom="10dp"
+                    android:src="@drawable/network_green"
+                    app:layout_constraintBottom_toTopOf="@id/tv_1080"
+                    app:layout_constraintEnd_toEndOf="@id/tv_1080"
+                    app:layout_constraintStart_toStartOf="@id/tv_1080" />
+
+                <ImageView
+                    android:id="@+id/iv_4k"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_marginBottom="10dp"
+                    android:src="@drawable/network_green"
+                    app:layout_constraintBottom_toTopOf="@id/tv_4k"
+                    app:layout_constraintEnd_toEndOf="@id/tv_4k"
+                    app:layout_constraintStart_toStartOf="@id/tv_4k" />
+
+                <View
+                    android:id="@+id/line1"
+                    android:layout_width="60dp"
+                    android:layout_height="1dp"
+                    android:background="#34CC32"
+                    app:layout_constraintBottom_toBottomOf="@id/iv_360"
+                    app:layout_constraintEnd_toStartOf="@id/iv_720"
+                    app:layout_constraintStart_toEndOf="@id/iv_360"
+                    app:layout_constraintTop_toTopOf="@id/iv_360" />
+
+                <View
+                    android:id="@+id/line2"
+                    android:layout_width="60dp"
+                    android:layout_height="1dp"
+                    android:background="#34CC32"
+                    app:layout_constraintBottom_toBottomOf="@id/iv_720"
+                    app:layout_constraintEnd_toStartOf="@id/iv_1080"
+                    app:layout_constraintStart_toEndOf="@id/iv_720"
+                    app:layout_constraintTop_toTopOf="@id/iv_720" />
+
+                <View
+                    android:id="@+id/line3"
+                    android:layout_width="60dp"
+                    android:layout_height="1dp"
+                    android:background="#34CC32"
+                    app:layout_constraintBottom_toBottomOf="@id/iv_1080"
+                    app:layout_constraintEnd_toStartOf="@id/iv_4k"
+                    app:layout_constraintStart_toEndOf="@id/iv_1080"
+                    app:layout_constraintTop_toTopOf="@id/iv_1080" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
