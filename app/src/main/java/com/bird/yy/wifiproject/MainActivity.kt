@@ -67,7 +67,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnWifiScanResultsListe
                     //这时需要我们自己处理，比如自定义弹窗告知用户为何必须要申请这个权限
                     showDialogByActivity(
                         "No location permission, unable to search for nearby WiFi", "confirm", true
-                    ) { dialog, which -> finish() }
+                    ) { _, _ -> finish() }
                 }
             }
         }
@@ -389,11 +389,11 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnWifiScanResultsListe
             val capabilities = it.capabilities
             // 获取WIFI信号强度
             val level = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                wifiManager?.calculateSignalLevel(it.level) ?: 0
+                wifiManager.calculateSignalLevel(it.level) ?: 0
             } else {
                 WifiManager.calculateSignalLevel(it.level, 4)
             }
-            val wifiInfo = wifiManager?.connectionInfo
+            val wifiInfo = wifiManager.connectionInfo
             val connectedSSID = wifiInfo?.ssid?.replace("\"", "")
             if (ssid.isNotEmpty()) {
                 var isExist = false

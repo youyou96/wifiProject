@@ -5,6 +5,9 @@ import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import com.bird.yy.wifiproject.entity.IpEntity
 import com.google.gson.Gson
+import com.lzy.okgo.OkGo
+import com.lzy.okgo.callback.StringCallback
+import com.lzy.okgo.model.Response
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.BufferedReader
@@ -58,6 +61,20 @@ open class InterNetUtil {
             process?.destroy()
         }
         return null
+    }
+
+    fun getIpByServer(context: Context) {
+        OkGo.get<String>("https://ip.seeip.org/geoip/")
+            .tag(context)
+            .execute(object : StringCallback() {
+                override fun onSuccess(response: Response<String>?) {
+                    SPUtils.get().putString(Constant.iR, response?.body())
+                }
+
+                override fun onError(response: Response<String>?) {
+                    super.onError(response)
+                }
+            })
     }
 
     fun isNetConnection(context: Context): Boolean {

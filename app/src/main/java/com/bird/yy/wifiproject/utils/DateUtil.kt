@@ -7,7 +7,7 @@ import java.util.Date
 class DateUtil {
     @SuppressLint("SimpleDateFormat")
     fun getTime(): String {
-        val simpleDateFormat = SimpleDateFormat("MM-dd \n HH:MM")
+        val simpleDateFormat = SimpleDateFormat("MM-dd \nHH:MM")
         val curDate = Date(System.currentTimeMillis())
         return simpleDateFormat.format(curDate)
     }

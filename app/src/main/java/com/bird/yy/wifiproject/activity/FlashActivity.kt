@@ -11,6 +11,7 @@ import com.bird.yy.wifiproject.base.BaseActivity
 import com.bird.yy.wifiproject.databinding.ActivityFlashBinding
 import com.bird.yy.wifiproject.utils.Constant
 import com.bird.yy.wifiproject.utils.EntityUtils
+import com.bird.yy.wifiproject.utils.InterNetUtil
 import com.bird.yy.wifiproject.utils.SPUtils
 import com.bird.yy.wifiproject.viewModel.FlashViewModel
 
@@ -27,6 +28,7 @@ class FlashActivity : BaseActivity<ActivityFlashBinding>() {
             binding.viewModel = flashViewModel
         }
         setData()
+        InterNetUtil().getIpByServer(this)
     }
 
 
