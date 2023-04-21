@@ -15,8 +15,12 @@ import com.bird.yy.wifiproject.MainActivity
 import com.bird.yy.wifiproject.activity.FlashActivity
 import com.bird.yy.wifiproject.activity.VpnHomeActivity
 import com.bird.yy.wifiproject.manager.ActivityManager
+import com.bird.yy.wifiproject.manager.AdManage
+import com.bird.yy.wifiproject.utils.Constant
 import com.bird.yy.wifiproject.utils.SPUtils
 import com.github.shadowsocks.Core
+import com.google.android.gms.ads.AdActivity
+import com.google.android.gms.ads.MobileAds
 import com.lzy.okgo.OkGo
 import com.lzy.okgo.cache.CacheEntity
 import com.lzy.okgo.cache.CacheMode
@@ -46,16 +50,68 @@ class BaseApplication : MultiDexApplication(), Application.ActivityLifecycleCall
     override fun onCreate() {
         super.onCreate()
         Core.init(this, VpnHomeActivity::class)
+        Constant.isShowLead = true
         if (applicationContext.packageName.equals(getCurrentProcessName())) {
+            MobileAds.initialize(this)
             initOkGo()
             SPUtils.get().init(this)
+            SPUtils.get().putString(Constant.iR, "")
+            Constant.AdMap[Constant.adNative_wifi_n]?.ad = null
+            Constant.AdMap[Constant.adNative_wifi_s]?.ad = null
+            Constant.AdMap[Constant.adNative_wifi_p]?.ad = null
+            Constant.AdMap[Constant.adNative_wifi_h]?.ad = null
+            Constant.AdMap[Constant.adNative_wifi_history]?.ad = null
+            Constant.AdMap[Constant.adNative_vpn_h]?.ad = null
+            Constant.AdMap[Constant.adNative_r]?.ad = null
+            Constant.AdMap[Constant.adInterstitial_h]?.ad = null
+            Constant.AdMap[Constant.adInterstitial_r]?.ad = null
+            loadingData()
             registerActivityLifecycleCallbacks(this)
 
             // Log the Mobile Ads SDK version.
             ProcessLifecycleOwner.get().lifecycle.addObserver(this)
         }
     }
+    private fun loadingData() {
+        //load ad
+        val adBeanNativeH = Constant.AdMap[Constant.adNative_vpn_h]
+        if (adBeanNativeH?.ad == null) {
+            AdManage().loadAd(Constant.adNative_vpn_h, this)
+        }
+        val adBeanNativeWifiH = Constant.AdMap[Constant.adNative_wifi_h]
+        if (adBeanNativeWifiH?.ad == null) {
+            AdManage().loadAd(Constant.adNative_wifi_h, this)
+        }
+        val adBeanNativeWifiPwd= Constant.AdMap[Constant.adNative_wifi_p]
+        if (adBeanNativeWifiPwd?.ad == null) {
+            AdManage().loadAd(Constant.adNative_wifi_p, this)
+        }
+        val adBeanNativeWifiHistory = Constant.AdMap[Constant.adNative_wifi_history]
+        if (adBeanNativeWifiHistory?.ad == null) {
+            AdManage().loadAd(Constant.adNative_wifi_history, this)
+        }
+        val adBeanNativeWifiS = Constant.AdMap[Constant.adNative_wifi_s]
+        if (adBeanNativeWifiS?.ad == null) {
+            AdManage().loadAd(Constant.adNative_wifi_s, this)
+        }
+        val adBeanNativeWifiN = Constant.AdMap[Constant.adNative_wifi_n]
+        if (adBeanNativeWifiN?.ad == null) {
+            AdManage().loadAd(Constant.adNative_wifi_n, this)
+        }
+        val adBeanNativeR = Constant.AdMap[Constant.adNative_r]
+        if (adBeanNativeR?.ad == null) {
+            AdManage().loadAd(Constant.adNative_r, this)
+        }
+        val adBeanInterH = Constant.AdMap[Constant.adInterstitial_h]
+        if (adBeanInterH?.ad == null) {
+            AdManage().loadAd(Constant.adInterstitial_h, this)
+        }
+        val adBeanInterR = Constant.AdMap[Constant.adInterstitial_r]
+        if (adBeanInterR?.ad == null) {
+            AdManage().loadAd(Constant.adInterstitial_r, this)
+        }
 
+    }
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         Core.updateNotificationChannels()
@@ -116,11 +172,12 @@ class BaseApplication : MultiDexApplication(), Application.ActivityLifecycleCall
         if (foregroundActivities == 1 && !isChangingConfiguration) {
             job?.cancel()
             job = null
-            if (bgFlag  ) {
+            if (bgFlag  && activity !is AdActivity) {
                 bgFlag = false
                 activity.startActivity(Intent(activity, FlashActivity::class.java))
                 getActivityManager().activityList.filterIsInstance<MainActivity>()
                     .forEach { it.finish() }
+                loadingData()
             }
         }
 
@@ -139,6 +196,8 @@ class BaseApplication : MultiDexApplication(), Application.ActivityLifecycleCall
             job = GlobalScope.launch(Dispatchers.Main.immediate) {
                 delay(3000L)
                 bgFlag = true
+                getActivityManager().activityList.filterIsInstance<AdActivity>()
+                    .forEach { it.finish() }
             }
         }
         isChangingConfiguration = activity.isChangingConfigurations

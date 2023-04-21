@@ -32,6 +32,9 @@ android {
         jvmTarget = '1.8'
     }
     dataBinding {
+        enable = true
+    }
+    viewBinding {
         enabled = true
     }
     packagingOptions {
@@ -62,4 +65,11 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
 
     implementation 'org.greenrobot:eventbus:3.0.0'
+    //ad
+    implementation(platform("com.google.firebase:firebase-bom:29.3.1"))
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+    implementation 'com.google.firebase:firebase-crashlytics-ktx'
+    implementation 'com.facebook.android:facebook-android-sdk:12.3.0'
+    implementation 'com.google.firebase:firebase-config-ktx'
+    implementation 'com.google.android.gms:play-services-ads:21.5.0'
 }

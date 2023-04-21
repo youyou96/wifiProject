@@ -11,4 +11,9 @@ class DateUtil {
         val curDate = Date(System.currentTimeMillis())
         return simpleDateFormat.format(curDate)
     }
+    fun getTimeDay(): String{
+        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd")
+        val curDate = Date(System.currentTimeMillis())
+        return simpleDateFormat.format(curDate)
+    }
 }

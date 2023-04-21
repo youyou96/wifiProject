@@ -3,8 +3,6 @@ package com.bird.yy.wifiproject
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.DialogInterface
-import android.content.DialogInterface.OnClickListener
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
@@ -16,7 +14,6 @@ import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.view.View
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
@@ -29,15 +26,16 @@ import com.bird.yy.wifiproject.adapter.WIFIAdapter
 import com.bird.yy.wifiproject.base.BaseActivity
 import com.bird.yy.wifiproject.databinding.ActivityMainBinding
 import com.bird.yy.wifiproject.dialog.PwdDialog
+import com.bird.yy.wifiproject.entity.AdBean
 import com.bird.yy.wifiproject.entity.WIFIEntity
 import com.bird.yy.wifiproject.listener.OnWifiConnectListener
 import com.bird.yy.wifiproject.listener.OnWifiEnabledListener
 import com.bird.yy.wifiproject.listener.OnWifiScanResultsListener
+import com.bird.yy.wifiproject.manager.AdManage
 import com.bird.yy.wifiproject.manager.WiFiManagerNew
 import com.bird.yy.wifiproject.utils.Constant
 import com.google.android.material.snackbar.Snackbar
 
-const val TAG = "MainActivity"
 
 class MainActivity : BaseActivity<ActivityMainBinding>(), OnWifiScanResultsListener,
     OnWifiConnectListener, OnWifiEnabledListener {
@@ -105,7 +103,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnWifiScanResultsListe
         }
         initData()
         initListener()
-
+        loadNativeAd()
     }
 
     override fun onResume() {
@@ -229,21 +227,17 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnWifiScanResultsListe
                 }
             }
         }
-        val view = binding.settingLayout
-        val contactUs = view.findViewById<TextView>(R.id.contact_us)
-        contactUs.setOnClickListener {
+
+        binding.settingLayout.contactUs.setOnClickListener {
             openMail()
         }
-        val privacyPolicy = view.findViewById<TextView>(R.id.privacy_policy)
-        privacyPolicy.setOnClickListener {
+        binding.settingLayout.privacyPolicy.setOnClickListener {
             jumpActivity(PrivacyPolicyWebView::class.java)
         }
-        val updateTv = view.findViewById<TextView>(R.id.update_tv)
-        updateTv.setOnClickListener {
+        binding.settingLayout.updateTv.setOnClickListener {
             rateNow()
         }
-        val shareTv = view.findViewById<TextView>(R.id.share_tv)
-        shareTv.setOnClickListener {
+        binding.settingLayout.shareTv.setOnClickListener {
             val intent = Intent()
             intent.action = Intent.ACTION_SEND
             intent.putExtra(Intent.EXTRA_TEXT, Constant.url)
@@ -436,6 +430,48 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnWifiScanResultsListe
             }
         }
     }
+    private var adManage = AdManage()
+    private fun loadNativeAd() {
+        val adBean = Constant.AdMap[Constant.adNative_wifi_h]
+        if (adBean?.ad == null) {
+            adManage.loadAd(Constant.adNative_wifi_h, this, object : AdManage.OnLoadAdCompleteListener {
+                override fun onLoadAdComplete(ad: AdBean?) {
+                    if (ad?.ad != null) {
+                        adManage.showAd(
+                            this@MainActivity,
+                            Constant.adNative_wifi_h,
+                            ad,
+                            binding.contentLayout.homeAdFl,
+                            object : AdManage.OnShowAdCompleteListener {
+                                override fun onShowAdComplete() {
+                                }
 
+                                override fun isMax() {
+                                }
 
+                            })
+                    }
+                }
+
+                override fun isMax() {
+
+                }
+            })
+        } else {
+            adManage.showAd(
+                this@MainActivity,
+                Constant.adNative_wifi_h,
+                adBean,
+                binding.contentLayout.homeAdFl,
+                object : AdManage.OnShowAdCompleteListener {
+                    override fun onShowAdComplete() {
+                    }
+
+                    override fun isMax() {
+
+                    }
+
+                })
+        }
+    }
 }

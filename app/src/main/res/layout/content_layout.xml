@@ -190,7 +190,6 @@
             android:layout_marginTop="15dp"
             android:layout_marginRight="16dp"
             android:background="@mipmap/ad_background"
-            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/home_security_cl" />
@@ -263,6 +262,7 @@
             app:layout_constraintTop_toBottomOf="@id/home_connected_cl" />
 
         <androidx.recyclerview.widget.RecyclerView
+            android:background="@drawable/wifi_info_background"
             android:id="@+id/wifi_rv"
             android:layout_width="match_parent"
             android:layout_height="0dp"
