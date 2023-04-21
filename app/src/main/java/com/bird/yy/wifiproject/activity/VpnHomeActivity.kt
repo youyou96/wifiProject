@@ -14,9 +14,11 @@ import androidx.preference.PreferenceDataStore
 import com.bird.yy.wifiproject.R
 import com.bird.yy.wifiproject.base.BaseActivity
 import com.bird.yy.wifiproject.databinding.ActivityVpnHomeBinding
+import com.bird.yy.wifiproject.entity.AdBean
 import com.bird.yy.wifiproject.entity.Country
 import com.bird.yy.wifiproject.entity.CountryBean
 import com.bird.yy.wifiproject.entity.SmartBean
+import com.bird.yy.wifiproject.manager.AdManage
 import com.bird.yy.wifiproject.utils.*
 import com.github.shadowsocks.Core
 import com.github.shadowsocks.aidl.IShadowsocksService
@@ -42,6 +44,7 @@ import java.util.*
 class VpnHomeActivity : BaseActivity<ActivityVpnHomeBinding>(), ShadowsocksConnection.Callback,
     OnPreferenceDataStoreChangeListener {
     private var state = BaseService.State.Idle
+    private var adManage = AdManage()
     private fun toggle() = if (state.canStop) showConnect() else connect.launch(null)
     private val connect = registerForActivityResult(StartService()) {
         if (it) Toast.makeText(this, "Missing permissions", Toast.LENGTH_SHORT)
@@ -54,6 +57,7 @@ class VpnHomeActivity : BaseActivity<ActivityVpnHomeBinding>(), ShadowsocksConne
         connection.connect(this, this)
         EventBus.getDefault().register(this)
         initListener()
+        loadNativeAd()
     }
 
     @SuppressLint("SetTextI18n")
@@ -300,6 +304,7 @@ class VpnHomeActivity : BaseActivity<ActivityVpnHomeBinding>(), ShadowsocksConne
 
     private var connectionJob: Job? = null
     private var time: Int = 0
+    private var interAdIsShow = false
     override fun onBinderDied() {
         connection.disconnect(this)
         connection.connect(this, this)
@@ -409,7 +414,14 @@ class VpnHomeActivity : BaseActivity<ActivityVpnHomeBinding>(), ShadowsocksConne
                 }
             }.collect {
                 //process
+                if (time == 1) {
+                    loadInterAd()
+                }
                 binding.vpnHomePb.setProgress(it * 10)
+                if (interAdIsShow) {
+                    connectionJob?.cancel()
+                    return@collect
+                }
             }
         }
 
@@ -426,5 +438,138 @@ class VpnHomeActivity : BaseActivity<ActivityVpnHomeBinding>(), ShadowsocksConne
         SPUtils.get().putBoolean(Constant.isShowResultKey, false)
         EventBus.getDefault().unregister(this)
         countryBean = null
+    }
+
+    private fun loadNativeAd() {
+        val adBean = Constant.AdMap[Constant.adNative_vpn_h]
+        var time: Long = 0
+        if (adBean != null) {
+            time = System.currentTimeMillis() - adBean.saveTime
+        }
+
+        if (adBean?.ad == null || time > 50 * 60 * 1000) {
+            Log.d("xxxx", "load")
+            adManage.loadAd(
+                Constant.adNative_vpn_h,
+                this,
+                object : AdManage.OnLoadAdCompleteListener {
+                    override fun onLoadAdComplete(ad: AdBean?) {
+                        if (ad?.ad != null) {
+                            showNativeAd(ad)
+                        }
+                    }
+
+                    override fun isMax() {
+
+                    }
+                })
+        } else {
+            Log.d("xxxx", "show")
+            showNativeAd(adBean)
+        }
+    }
+
+    fun showNativeAd(ad: AdBean) {
+        adManage.showAd(
+            this@VpnHomeActivity,
+            Constant.adNative_vpn_h,
+            ad,
+            binding.adFrameLayout,
+            object : AdManage.OnShowAdCompleteListener {
+                override fun onShowAdComplete() {
+                }
+
+                override fun isMax() {
+                }
+
+            })
+    }
+
+    private fun loadInterAd() {
+        interAdIsShow = false
+        val adBean = Constant.AdMap[Constant.adInterstitial_h]
+        var time: Long = 0
+        if (adBean != null) {
+            time = System.currentTimeMillis() - adBean.saveTime
+        }
+        if (adBean?.ad == null || time > 50 * 60 * 1000) {
+            adManage.loadAd(
+                Constant.adInterstitial_h,
+                this,
+                object : AdManage.OnLoadAdCompleteListener {
+                    override fun onLoadAdComplete(ad: AdBean?) {
+                        if (ad?.ad != null) {
+                            interAdIsShow = true
+                            adManage.showAd(
+                                this@VpnHomeActivity,
+                                Constant.adInterstitial_h,
+                                ad,
+                                null,
+                                object : AdManage.OnShowAdCompleteListener {
+                                    override fun onShowAdComplete() {
+                                        AdManage().loadAd(
+                                            Constant.adInterstitial_h,
+                                            this@VpnHomeActivity
+                                        )
+                                        if (state.canStop) {
+                                            Core.stopService()
+                                        } else {
+                                            Core.startService()
+                                        }
+                                    }
+
+                                    override fun isMax() {
+                                        if (state.canStop) {
+                                            Core.stopService()
+                                        } else {
+                                            Core.startService()
+                                        }
+                                    }
+
+                                })
+                        }
+                    }
+
+                    override fun isMax() {
+                        if (state.canStop) {
+                            Core.stopService()
+                        } else {
+                            Core.startService()
+                        }
+                    }
+
+                })
+        } else {
+            interAdIsShow = true
+            adManage.showAd(
+                this@VpnHomeActivity,
+                Constant.adInterstitial_h,
+                adBean,
+                null,
+                object : AdManage.OnShowAdCompleteListener {
+                    override fun onShowAdComplete() {
+                        AdManage().loadAd(Constant.adInterstitial_h, this@VpnHomeActivity)
+                        if (state.canStop) {
+                            Core.stopService()
+                        } else {
+                            Core.startService()
+                        }
+                    }
+
+                    override fun isMax() {
+                        if (state.canStop) {
+                            Core.stopService()
+                        } else {
+                            Core.startService()
+                        }
+                    }
+
+                })
+        }
+
+        val adBeanNativeR = Constant.AdMap[Constant.adNative_r]
+        if (adBeanNativeR?.ad == null) {
+            AdManage().loadAd(Constant.adNative_r, this)
+        }
     }
 }

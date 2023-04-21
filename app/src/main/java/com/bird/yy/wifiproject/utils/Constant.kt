@@ -21,7 +21,7 @@ open class Constant {
         const val smart = "smart"
         const val service = "service"
         const val connectTime = "connectTime"
-        const val adResourceBean ="adResourceBean"
+        const val adResourceBean = "adResourceBean"
         const val adOpen = "serpac_o_open"
         const val adInterstitial_r = "serpac_i_2R"
         const val adInterstitial_h = "serpac_i_2H"
@@ -32,17 +32,18 @@ open class Constant {
         const val adNative_wifi_n = "serpac_wifi_network"
         const val adNative_vpn_h = "serpac_vpn_network"
         const val adNative_r = "serpac_n_result"
-        const val openAdType ="open"
+        const val openAdType = "open"
         const val nativeAdType = "native"
         const val interAdType = "inter"
         const val adTimeBean = "adTimeBean"
+        const val timeOut = 50 * 60 * 1000
         var securityOrSpeed = ""
         var report: SpeedTestReport? = null
         var pingInt1 = 0
         var pingInt2 = 0
         var pingInt3 = 0
         var text = "00:00:00"
-        var isShowLead  = true
+        var isShowLead = true
         var AdMapStatus: MutableMap<String, Boolean> = mutableMapOf()
         var AdMap: MutableMap<String, AdBean> = mutableMapOf()
     }
