@@ -30,8 +30,11 @@ class WIFIAdapter : RecyclerView.Adapter<WIFIAdapter.WIFIViewHolder>() {
             wifiData[position].run {
                 holder.tvWifiName.text = wifiSSID
                 holder.ivWifiStrength.setImageResource(getStrengthIcon(wifiStrength))
-                holder.ivNeedPassword.setImageResource(if (needPassword) R.mipmap.icon_lock else R.mipmap.icon_lock)
-
+                if (needPassword){
+                    holder.ivNeedPassword.visibility = View.VISIBLE
+                }else{
+                    holder.ivNeedPassword.visibility = View.GONE
+                }
 //            }
         }
 

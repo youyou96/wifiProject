@@ -150,6 +150,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:visibility="invisible"
             android:id="@+id/vpn_cl"
             android:layout_width="97dp"
             android:layout_height="wrap_content"
@@ -261,7 +262,17 @@
             android:textSize="12sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/home_connected_cl" />
-
+        <TextView
+            android:id="@+id/home_refresh_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="8dp"
+            android:text="refresh"
+            android:textColor="#FFFFFFFF"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/home_connected_cl" />
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/wifi_rv"
             android:layout_width="match_parent"

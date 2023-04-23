@@ -51,29 +51,12 @@ public class BaseWiFiManager {
      */
     protected int setOpenNetwork(@NonNull String ssid) {
         if (TextUtils.isEmpty(ssid)) {
+            Log.d("xxxxx","0000000");
             return -1;
         }
-        WifiConfiguration wifiConfiguration = getConfigFromConfiguredNetworksBySsid(ssid);
-        if (null == wifiConfiguration) {
-            // 生成配置
-            WifiConfiguration wifiConfig = new WifiConfiguration();
-            wifiConfig.SSID = addDoubleQuotation(ssid);
-            wifiConfig.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
-            wifiConfig.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
-            wifiConfig.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
-            wifiConfig.allowedAuthAlgorithms.clear();
-            wifiConfig.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
-            wifiConfig.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
-            wifiConfig.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP40);
-            wifiConfig.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP104);
-            wifiConfig.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
-            wifiConfig.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
-            // 添加配置并返回NetworkID
-            return addNetwork(wifiConfig);
-        } else {
-            // 返回NetworkID
-            return wifiConfiguration.networkId;
-        }
+        WifiConfiguration wifiConfiguration = createWifiInfo(ssid, "", 1);
+        return addNetwork(wifiConfiguration);
+
     }
 
     /**
@@ -88,28 +71,8 @@ public class BaseWiFiManager {
             return -1;
         }
 
-        WifiConfiguration wifiConfiguration = getConfigFromConfiguredNetworksBySsid(ssid);
-        if (null == wifiConfiguration) {
-            // 添加配置
-            WifiConfiguration wifiConfig = new WifiConfiguration();
-            wifiConfig.SSID = addDoubleQuotation(ssid);
-            wifiConfig.wepKeys[0] = "\"" + password + "\"";
-            wifiConfig.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
-            wifiConfig.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
-            wifiConfig.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
-            wifiConfig.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);
-            wifiConfig.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.SHARED);
-            wifiConfig.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
-            wifiConfig.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
-            wifiConfig.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP40);
-            wifiConfig.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP104);
-            // 添加配置并返回NetworkID
-            return addNetwork(wifiConfig);
-        } else {
-            // 更新配置并返回NetworkID
-            wifiConfiguration.wepKeys[0] = "\"" + password + "\"";
-            return updateNetwork(wifiConfiguration);
-        }
+        WifiConfiguration wifiConfiguration = createWifiInfo(ssid, password, 2);
+        return updateNetwork(wifiConfiguration);
     }
 
     /**
@@ -168,9 +131,7 @@ public class BaseWiFiManager {
 
         if (Type == 1) //WIFICIPHER_NOPASS
         {
-            config.wepKeys[0] = "";
             config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
-            config.wepTxKeyIndex = 0;
         }
         if (Type == 2) //WIFICIPHER_WEP
         {
@@ -359,10 +320,9 @@ public class BaseWiFiManager {
      */
     protected boolean enableNetwork(int networkId) {
         if (null != mWifiManager) {
-//            boolean isDisconnect = disconnectCurrentWifi();
+
             boolean isEnableNetwork = mWifiManager.enableNetwork(networkId, true);
-//            boolean isSave = mWifiManager.saveConfiguration();
-//            boolean isReconnect = mWifiManager.reconnect();
+            Log.d("xxxxxxx", "     isEnableNetwork:");
             return isEnableNetwork;
         }
         return false;
@@ -377,6 +337,7 @@ public class BaseWiFiManager {
     private int addNetwork(WifiConfiguration wifiConfig) {
         if (null != mWifiManager) {
             int networkId = mWifiManager.addNetwork(wifiConfig);
+            Log.d("xxxxx",networkId+"");
 //            if (-1 != networkId) {
 //                boolean isSave = mWifiManager.saveConfiguration();
 //                if (isSave) {

@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import android.os.Bundle
+import android.util.Log
 import android.view.animation.AnimationUtils
 import androidx.lifecycle.lifecycleScope
 import com.bird.yy.wifiproject.R
@@ -40,6 +41,7 @@ class NetworkTestLoadingActivity : BaseActivity<ActivitySecurityLoadingBinding>(
         showTime()
     }
 
+
     private fun initView() {
         if (isSpeed) {
             binding.animationView.setBackgroundResource(R.mipmap.speed_backgroud)
@@ -60,45 +62,12 @@ class NetworkTestLoadingActivity : BaseActivity<ActivitySecurityLoadingBinding>(
             Constant.pingInt2 = ping2
             val ping3 = InterNetUtil().delayTest(Constant.ping3, 1)
             Constant.pingInt3 = ping3
-            val historyEntityLisJson = SPUtils.get().getString("history", "")
-            var historyEntityList = arrayListOf<HistoryEntity>()
-            if (historyEntityLisJson != null && historyEntityLisJson.isNotEmpty()) {
-                val type: Type = object : TypeToken<List<HistoryEntity?>?>() {}.type
-                historyEntityList = Gson().fromJson(historyEntityLisJson.toString(), type)
-            }
-            if (wifiInfo != null) {
-                val history =
-                    wifiInfo?.ssid?.let {
-                        HistoryEntity(
-                            it,
-                            DateUtil().getTime(),
-                            ping1,
-                            ping2,
-                            ping3
-                        )
-                    }
-                if (history != null) {
-                    var isExit = false
-                    historyEntityList.forEach {
-                        if (it.name == history.name) {
-                            it.date = history.date
-                            it.router = history.router
-                            it.cn = history.cn
-                            it.totalGame = history.totalGame
-                            isExit = true
-                        }
-                    }
-                    if (!isExit) {
-                        historyEntityList.add(history)
-                    }
-                }
-                SPUtils.get().putString("history", Gson().toJson(historyEntityList))
-            }
         }
     }
 
     private fun initListener() {
         binding.arrowBack.setOnClickListener {
+            connectionJob?.cancel()
             finish()
         }
     }
@@ -131,7 +100,7 @@ class NetworkTestLoadingActivity : BaseActivity<ActivitySecurityLoadingBinding>(
     private var connectionJob: Job? = null
     private var num: Int = 1
     private fun showTime() {
-        connectionJob = lifecycleScope.launch {
+        connectionJob = lifecycleScope.launch(Dispatchers.IO) {
             flow {
                 (0 until 10).forEach {
                     delay(1000)

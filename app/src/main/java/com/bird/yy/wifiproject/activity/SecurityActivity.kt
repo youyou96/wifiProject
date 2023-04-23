@@ -37,7 +37,7 @@ class SecurityActivity : BaseActivity<ActivitySecurityBinding>() {
         }
         binding.wifiName.text = wifiInfo?.ssid
         binding.wifiSpeed.text = wifiInfo?.linkSpeed.toString() + "Mb"
-        binding.wifiIp.text = wifiInfo?.ipAddress.toString()
+        binding.wifiIp.text = wifiInfo?.ipAddress?.toLong()?.let { longToIp(it) }
         binding.wifiMac.text = wifiInfo?.macAddress
     }
 
@@ -45,5 +45,12 @@ class SecurityActivity : BaseActivity<ActivitySecurityBinding>() {
         binding.arrowBack.setOnClickListener {
             finish()
         }
+    }
+
+    private fun longToIp(ip: Long): String {
+        return ((ip and 0xFF).toString() + "."
+                + (ip shr 8 and 0xFF) + "."
+                + (ip shr 16 and 0xFF) + "."
+                + (ip shr 24 and 0xFF).toString())
     }
 }

@@ -1,5 +1,6 @@
 package com.bird.yy.wifiproject.utils
 
+import com.bird.yy.wifiproject.entity.WIFIEntity
 import fr.bmartel.speedtest.SpeedTestReport
 
 open class Constant {
@@ -26,6 +27,7 @@ open class Constant {
         var pingInt2 = 0
         var pingInt3 = 0
         var text = "00:00:00"
-        var isShowLead  = true
+        var isShowLead = true
+        var wifiEntity: WIFIEntity? = null
     }
 }

@@ -84,9 +84,10 @@ public class WiFiManagerNew extends BaseWiFiManager {
     public boolean connectOpenNetwork(@NonNull String ssid) {
         // 获取networkId
         int networkId = setOpenNetwork(ssid);
+        Log.i(TAG, "connectWPA2Network:  networkId:"+networkId);
         if (-1 != networkId) {
             // 保存配置
-//            boolean isSave = saveConfiguration();
+            boolean isSave = mWifiManager.saveConfiguration();
             // 连接网络
             boolean isEnable = enableNetwork(networkId);
 
@@ -130,6 +131,7 @@ public class WiFiManagerNew extends BaseWiFiManager {
 //           mWiFiManager.disconnectCurrentWifi();
         // 获取networkId
         int networkId = setWPA2Network(ssid, password);
+        Log.i(TAG, "connectWPA2Network:  networkId:"+networkId);
         if (-1 != networkId) {
             // 保存配置
 //            boolean isSave = saveConfiguration();
@@ -221,19 +223,19 @@ public class WiFiManagerNew extends BaseWiFiManager {
 //                            Log.i(TAG, "onReceive: DISCONNECTED:// 断开连接");
 //                            break;
                         case INACTIVE: // 不活跃的
-                            WifiInfo connectFailureInfo = wifiManager.getConnectionInfo();
-                            Log.i(TAG, "onReceive: INACTIVE 不活跃的  connectFailureInfo = " + connectFailureInfo);
-                            if (null != connectFailureInfo) {
-                                Message wifiConnectFailureMessage = Message.obtain();
-                                wifiConnectFailureMessage.what = WIFI_CONNECT_FAILURE;
-                                wifiConnectFailureMessage.obj = connectFailureInfo.getSSID();
-                                mCallBackHandler.sendMessage(wifiConnectFailureMessage);
-                                // 断开连接
-                                int networkId = connectFailureInfo.getNetworkId();
-                                boolean isDisable = wifiManager.disableNetwork(networkId);
-                                boolean isDisconnect = wifiManager.disconnect();
-                                Log.i(TAG, "onReceive: 断开连接  =  " + (isDisable && isDisconnect));
-                            }
+//                            WifiInfo connectFailureInfo = wifiManager.getConnectionInfo();
+//                            Log.i(TAG, "onReceive: INACTIVE 不活跃的  connectFailureInfo = " + connectFailureInfo);
+//                            if (null != connectFailureInfo) {
+//                                Message wifiConnectFailureMessage = Message.obtain();
+//                                wifiConnectFailureMessage.what = WIFI_CONNECT_FAILURE;
+//                                wifiConnectFailureMessage.obj = connectFailureInfo.getSSID();
+//                                mCallBackHandler.sendMessage(wifiConnectFailureMessage);
+//                                // 断开连接
+//                                int networkId = connectFailureInfo.getNetworkId();
+//                                boolean isDisable = wifiManager.disableNetwork(networkId);
+//                                boolean isDisconnect = wifiManager.disconnect();
+//                                Log.i(TAG, "onReceive: 断开连接  =  " + (isDisable && isDisconnect));
+//                            }
                             break;
                         case SCANNING: // 正在扫描
                             Log.i(TAG, "onReceive: SCANNING 正在扫描");
@@ -245,7 +247,7 @@ public class WiFiManagerNew extends BaseWiFiManager {
                             Log.i(TAG, "onReceive: ASSOCIATING: // 正在关联");
                             break;
                         case ASSOCIATED: // 已经关联
-                            Log.i(TAG, "onReceive: ASSOCIATED: // 已经关联");
+                            Log.i(TAG, "onReceive: ASSOCIATED: // 已经关联"+wifiManager.getConnectionInfo().getNetworkId());
                             break;
                         case FOUR_WAY_HANDSHAKE:
                             Log.i(TAG, "onReceive: FOUR_WAY_HANDSHAKE:");

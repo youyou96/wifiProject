@@ -3,12 +3,11 @@ package com.bird.yy.wifiproject
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.DialogInterface
-import android.content.DialogInterface.OnClickListener
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
+import android.location.LocationManager
 import android.net.*
 import android.net.wifi.*
 import android.os.Build
@@ -19,6 +18,7 @@ import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.net.toUri
 import com.bird.yy.wifiproject.activity.ActivityHistory
@@ -35,7 +35,10 @@ import com.bird.yy.wifiproject.listener.OnWifiEnabledListener
 import com.bird.yy.wifiproject.listener.OnWifiScanResultsListener
 import com.bird.yy.wifiproject.manager.WiFiManagerNew
 import com.bird.yy.wifiproject.utils.Constant
+import com.bird.yy.wifiproject.utils.SPUtils
 import com.google.android.material.snackbar.Snackbar
+import com.google.gson.Gson
+
 
 const val TAG = "MainActivity"
 
@@ -86,6 +89,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnWifiScanResultsListe
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
@@ -103,7 +107,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnWifiScanResultsListe
         if (!wifiManager.isWifiEnabled) {
             wifiManager.isWifiEnabled = true
         }
-        initData()
+//        initData()
         initListener()
 
     }
@@ -122,26 +126,40 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnWifiScanResultsListe
         wiFiManagerNew.removeOnWifiScanResultsListener()
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    override fun onStart() {
+        super.onStart()
+        initData()
+    }
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    @SuppressLint("ServiceCast")
     private fun initData() {
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                requestPermissionName
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-//            if (wifiManager?.isWifiEnabled == true) {
-            val wifiInfo = wifiManager.connectionInfo
-            refreshConnectStatus(wifiInfo)
-//            wifiManager.startScan()
-            if (wifiManager.scanResults != null && wifiManager.scanResults.isNotEmpty()) {
-                reFreshData(wifiManager.scanResults)
-            } else {
+        val location: LocationManager = getSystemService(LOCATION_SERVICE) as LocationManager
+        if (location.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            if (ActivityCompat.checkSelfPermission(
+                    this,
+                    requestPermissionName
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                val wifiInfo = wifiManager.connectionInfo
+                refreshConnectStatus(wifiInfo)
                 wifiManager.startScan()
-            }
+            } else {
 
-//            }
+                requestSinglePermissionLauncher.launch(requestPermissionName)
+
+
+            }
         } else {
-            requestSinglePermissionLauncher.launch(requestPermissionName)
+            showDialogByActivity(
+                "Please go to the settings page to enable location permissions", "ok", true,
+                { dialog, which ->
+                    val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                    startActivity(intent)
+                }, "cancel"
+            ) { dialog, which -> dialog?.dismiss() }
         }
+
     }
 
     private fun refreshConnectStatus(wifiInfo: WifiInfo?) {
@@ -174,6 +192,11 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnWifiScanResultsListe
                 binding.drawerLayout.open()
             }
         }
+        binding.contentLayout.homeRefreshTv.setOnClickListener {
+            if (wifiManager != null) {
+                wifiManager.startScan()
+            }
+        }
         wifiAdapter.itemClickListener = object : WIFIAdapter.ItemClickListener {
             @SuppressLint("ShowToast")
             override fun onItemClick(wifiInfo: WIFIEntity) {
@@ -188,15 +211,47 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnWifiScanResultsListe
                 ) {
                     //pwd dialog
 //                    showInputWIFIPasswordDialog(wifiInfo)
-                    val pwdDialog = PwdDialog(this@MainActivity)
+                    val wifiEntityJson = SPUtils.get().getString(wifiInfo.wifiSSID, "")
+                    Log.d("xxxxx",wifiInfo.wifiSSID+wifiEntityJson.toString())
+                    if (wifiEntityJson != null) {
+                        if (wifiEntityJson.isNotEmpty()) {
+                            val wifiEntity = Gson().fromJson(wifiEntityJson, WIFIEntity::class.java)
+                            if (wifiEntity != null && wifiInfo.wifiSSID == wifiEntity.wifiSSID) {
+                                wifiInfo.password = wifiEntity.password
+                            }
+                        }
+                    }
+
+                    val pwdDialog = PwdDialog(this@MainActivity, wifiInfo.wifiSSID, wifiInfo.password)
                     pwdDialog.setConnectWifi { pwd ->
+                        wifiInfo.password = pwd
+                        Constant.wifiEntity = wifiInfo
                         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                            WiFiManagerNew.getInstance(this@MainActivity)
-                                .connectWPA2Network(wifiInfo.wifiSSID, pwd)
-                        } else {
-                            if (Settings.canDrawOverlays(this@MainActivity)) {
+                            if (wifiInfo.capabilities.contains(
+                                    "wpa",
+                                    true
+                                )
+                            ) {
                                 WiFiManagerNew.getInstance(this@MainActivity)
                                     .connectWPA2Network(wifiInfo.wifiSSID, pwd)
+                            } else {
+                                WiFiManagerNew.getInstance(this@MainActivity)
+                                    .connectWEPNetwork(wifiInfo.wifiSSID, pwd)
+                            }
+
+                        } else {
+                            if (Settings.canDrawOverlays(this@MainActivity)) {
+                                if (wifiInfo.capabilities.contains(
+                                        "wpa",
+                                        true
+                                    )
+                                ) {
+                                    WiFiManagerNew.getInstance(this@MainActivity)
+                                        .connectWPA2Network(wifiInfo.wifiSSID, pwd)
+                                } else {
+                                    WiFiManagerNew.getInstance(this@MainActivity)
+                                        .connectWEPNetwork(wifiInfo.wifiSSID, pwd)
+                                }
                             } else {
                                 showDialogByActivity(
                                     "Due to system limitations, we need floating window permissions to work",
@@ -227,6 +282,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnWifiScanResultsListe
                     WiFiManagerNew.getInstance(this@MainActivity)
                         .connectOpenNetwork(wifiInfo.wifiSSID)
                 }
+
+
             }
         }
         val view = binding.settingLayout
@@ -261,7 +318,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnWifiScanResultsListe
             if (binding.drawerLayout.isOpen || !wifiManager.isWifiEnabled) {
                 return@setOnClickListener
             }
-
             jumpActivity(NetworkTestLoadingActivity::class.java)
             Constant.securityOrSpeed = "speed"
         }
@@ -284,6 +340,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnWifiScanResultsListe
 //            WiFiManagerNew.getInstance(this).disconnectCurrentWifi()
 //        }
     }
+
 
     private fun rateNow() {
         try {
@@ -346,6 +403,15 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnWifiScanResultsListe
         Log.i("MainActivity.TAG", "onWiFiConnectLog: $SSID")
         if (chooseWifiInfo != null) {
             if (SSID != null) {
+                val wifiInfo = wifiManager.connectionInfo
+                val wifiEntity = Constant.wifiEntity
+                Log.d("xxxxx",wifiEntity.toString())
+                if (wifiEntity != null) {
+                    if (SSID == wifiInfo.ssid) {
+                        SPUtils.get().putString(SSID.replace("\"", ""), Gson().toJson(wifiEntity))
+                    }
+                }
+                refreshConnectStatus(wifiInfo)
                 if (chooseWifiInfo?.wifiSSID?.let { SSID.contains(it) } == true) {
                     Toast.makeText(applicationContext, "$SSID  connected", Toast.LENGTH_SHORT)
                         .show()
