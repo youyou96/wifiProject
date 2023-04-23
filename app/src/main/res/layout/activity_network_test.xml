@@ -99,7 +99,6 @@
                 android:id="@+id/total_game_speed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
                 android:layout_marginTop="26dp"
                 android:text="-1ms"
                 android:textColor="#FFFFFFFF"
@@ -122,7 +121,6 @@
                 android:id="@+id/cn_speed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
                 android:layout_marginTop="26dp"
                 android:text="-1ms"
                 android:textColor="#FFFFFFFF"
@@ -169,7 +167,7 @@
                 android:id="@+id/video_speed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Game Speed"
+                android:text="Video Speed"
                 android:textColor="#FFFFFFFF"
                 android:textSize="14sp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -264,7 +262,6 @@
                     android:layout_width="12dp"
                     android:layout_height="12dp"
                     android:layout_marginBottom="10dp"
-                    android:src="@drawable/network_green"
                     app:layout_constraintBottom_toTopOf="@id/tv_360"
                     app:layout_constraintEnd_toEndOf="@id/tv_360"
                     app:layout_constraintStart_toStartOf="@id/tv_360" />
@@ -274,7 +271,6 @@
                     android:layout_width="12dp"
                     android:layout_height="12dp"
                     android:layout_marginBottom="10dp"
-                    android:src="@drawable/network_green"
                     app:layout_constraintBottom_toTopOf="@id/tv_720"
                     app:layout_constraintEnd_toEndOf="@id/tv_720"
                     app:layout_constraintStart_toStartOf="@id/tv_720" />
@@ -284,7 +280,6 @@
                     android:layout_width="12dp"
                     android:layout_height="12dp"
                     android:layout_marginBottom="10dp"
-                    android:src="@drawable/network_green"
                     app:layout_constraintBottom_toTopOf="@id/tv_1080"
                     app:layout_constraintEnd_toEndOf="@id/tv_1080"
                     app:layout_constraintStart_toStartOf="@id/tv_1080" />
@@ -294,7 +289,6 @@
                     android:layout_width="12dp"
                     android:layout_height="12dp"
                     android:layout_marginBottom="10dp"
-                    android:src="@drawable/network_green"
                     app:layout_constraintBottom_toTopOf="@id/tv_4k"
                     app:layout_constraintEnd_toEndOf="@id/tv_4k"
                     app:layout_constraintStart_toStartOf="@id/tv_4k" />

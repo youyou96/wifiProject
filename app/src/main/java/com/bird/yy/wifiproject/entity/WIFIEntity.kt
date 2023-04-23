@@ -5,7 +5,8 @@ data class WIFIEntity(
     val wifiBSSID: String,
     val needPassword: Boolean,
     val capabilities: String,
-    val wifiStrength: Int
+    val wifiStrength: Int,
+    var password: String? = ""
 ) {
 
     override fun toString(): String {

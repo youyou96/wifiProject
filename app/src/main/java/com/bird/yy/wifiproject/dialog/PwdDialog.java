@@ -16,16 +16,22 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
 import com.bird.yy.wifiproject.R;
+import com.bird.yy.wifiproject.utils.Constant;
 
 public class PwdDialog extends Dialog {
     private ConnectWifiListener connectWifi;
+    private String wifiSSID;
+    private String pwd;
 
-    public PwdDialog(@NonNull Context context) {
+    public PwdDialog(@NonNull Context context,String wifiSSID,String pwd) {
         super(context);
+        this.wifiSSID = wifiSSID;
+        this.pwd = pwd;
     }
 
     public void setConnectWifi(ConnectWifiListener connectWifi) {
@@ -37,11 +43,14 @@ public class PwdDialog extends Dialog {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dialog_pwd);
+        TextView wifiName = findViewById(R.id.wifi_name);
+        wifiName.setText(wifiSSID);
         ImageView lookIv = findViewById(R.id.look_iv);
         EditText pwdEt = findViewById(R.id.pwd_et);
         ImageView chooseIv = findViewById(R.id.choose_iv);
         Button cancelBt = findViewById(R.id.cancel_button);
         Button connectBt = findViewById(R.id.connect_bt);
+        pwdEt.setText(pwd);
         lookIv.setOnClickListener(v -> {
             if (chooseIv.isSelected()) {
                 chooseIv.setSelected(false);

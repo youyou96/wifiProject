@@ -8,7 +8,13 @@ import android.util.Log
 import com.bird.yy.wifiproject.R
 import com.bird.yy.wifiproject.base.BaseActivity
 import com.bird.yy.wifiproject.databinding.ActivityNetworkTestBinding
+import com.bird.yy.wifiproject.entity.HistoryEntity
 import com.bird.yy.wifiproject.utils.Constant
+import com.bird.yy.wifiproject.utils.DateUtil
+import com.bird.yy.wifiproject.utils.SPUtils
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import java.lang.reflect.Type
 
 class NetworkTestActivity : BaseActivity<ActivityNetworkTestBinding>() {
     private lateinit var wifiManager: WifiManager
@@ -33,7 +39,8 @@ class NetworkTestActivity : BaseActivity<ActivityNetworkTestBinding>() {
             binding.gameType.text = "The game can be played normally"
         }
         if (Constant.report != null) {
-            if (Constant.report!!.transferRateBit.toLong() < 250 * 1024) {
+            Log.d("xxxx", Constant.report!!.transferRateBit.toString())
+            if (Constant.report!!.transferRateBit.toLong() < 2 * 1024 * 1024) {
                 binding.videoTitle.text = "Accordng to your speed,We recommend \n 360P videos"
                 binding.tv360.setTextColor(resources.getColor(R.color.color34CC32))
                 binding.tv720.setTextColor(resources.getColor(R.color.colorB7C3FF))
@@ -41,12 +48,13 @@ class NetworkTestActivity : BaseActivity<ActivityNetworkTestBinding>() {
                 binding.tv4k.setTextColor(resources.getColor(R.color.colorB7C3FF))
                 binding.iv360.setBackgroundResource(R.drawable.network_green)
                 binding.iv720.setBackgroundResource(R.drawable.network_gray)
-                binding.iv360.setBackgroundResource(R.drawable.network_gray)
-                binding.iv360.setBackgroundResource(R.drawable.network_gray)
+                binding.iv1080.setBackgroundResource(R.drawable.network_gray)
+                binding.iv4k.setBackgroundResource(R.drawable.network_gray)
                 binding.line1.setBackgroundResource(R.color.colorB7C3FF)
                 binding.line2.setBackgroundResource(R.color.colorB7C3FF)
                 binding.line3.setBackgroundResource(R.color.colorB7C3FF)
-            } else if (Constant.report!!.transferRateBit.toLong() < 500 * 1024) {
+                Log.d("xxxx", "00000000")
+            } else if (Constant.report!!.transferRateBit.toLong() < 5 * 1024 * 1024) {
                 binding.videoTitle.text = "Accordng to your speed,We recommend \n 720P videos"
                 binding.tv360.setTextColor(resources.getColor(R.color.color34CC32))
                 binding.tv720.setTextColor(resources.getColor(R.color.color34CC32))
@@ -54,13 +62,14 @@ class NetworkTestActivity : BaseActivity<ActivityNetworkTestBinding>() {
                 binding.tv4k.setTextColor(resources.getColor(R.color.colorB7C3FF))
                 binding.iv360.setBackgroundResource(R.drawable.network_green)
                 binding.iv720.setBackgroundResource(R.drawable.network_green)
-                binding.iv360.setBackgroundResource(R.drawable.network_gray)
-                binding.iv360.setBackgroundResource(R.drawable.network_gray)
+                binding.iv1080.setBackgroundResource(R.drawable.network_gray)
+                binding.iv4k.setBackgroundResource(R.drawable.network_gray)
                 binding.line1.setBackgroundResource(R.color.color34CC32)
                 binding.line2.setBackgroundResource(R.color.colorB7C3FF)
                 binding.line3.setBackgroundResource(R.color.colorB7C3FF)
+                Log.d("xxxx", "11111111")
 
-            } else if (Constant.report!!.transferRateBit.toLong() < 750 * 1024) {
+            } else if (Constant.report!!.transferRateBit.toLong() < 10 * 1024 * 1024) {
                 binding.videoTitle.text = "Accordng to your speed,We recommend \n 1080P videos"
                 binding.tv360.setTextColor(resources.getColor(R.color.color34CC32))
                 binding.tv720.setTextColor(resources.getColor(R.color.color34CC32))
@@ -68,11 +77,12 @@ class NetworkTestActivity : BaseActivity<ActivityNetworkTestBinding>() {
                 binding.tv4k.setTextColor(resources.getColor(R.color.colorB7C3FF))
                 binding.iv360.setBackgroundResource(R.drawable.network_green)
                 binding.iv720.setBackgroundResource(R.drawable.network_green)
-                binding.iv360.setBackgroundResource(R.drawable.network_green)
-                binding.iv360.setBackgroundResource(R.drawable.network_gray)
+                binding.iv1080.setBackgroundResource(R.drawable.network_green)
+                binding.iv4k.setBackgroundResource(R.drawable.network_gray)
                 binding.line1.setBackgroundResource(R.color.color34CC32)
                 binding.line2.setBackgroundResource(R.color.color34CC32)
                 binding.line3.setBackgroundResource(R.color.colorB7C3FF)
+                Log.d("xxxx", "222222222")
 
             } else {
                 binding.videoTitle.text = "Accordng to your speed,We recommend \n 4k videos"
@@ -82,13 +92,37 @@ class NetworkTestActivity : BaseActivity<ActivityNetworkTestBinding>() {
                 binding.tv4k.setTextColor(resources.getColor(R.color.color34CC32))
                 binding.iv360.setBackgroundResource(R.drawable.network_green)
                 binding.iv720.setBackgroundResource(R.drawable.network_green)
-                binding.iv360.setBackgroundResource(R.drawable.network_green)
-                binding.iv360.setBackgroundResource(R.drawable.network_green)
+                binding.iv1080.setBackgroundResource(R.drawable.network_green)
+                binding.iv4k.setBackgroundResource(R.drawable.network_green)
                 binding.line1.setBackgroundResource(R.color.color34CC32)
                 binding.line2.setBackgroundResource(R.color.color34CC32)
                 binding.line3.setBackgroundResource(R.color.color34CC32)
+                Log.d("xxxx", "33333333")
 
             }
+        }
+        val historyEntityLisJson = SPUtils.get().getString("history", "")
+        var historyEntityList = arrayListOf<HistoryEntity>()
+        if (historyEntityLisJson != null && historyEntityLisJson.isNotEmpty()) {
+            val type: Type = object : TypeToken<List<HistoryEntity?>?>() {}.type
+            historyEntityList = Gson().fromJson(historyEntityLisJson.toString(), type)
+        }
+        val wifiInfo = wifiManager.connectionInfo
+        if (wifiInfo != null) {
+            val history =
+                wifiInfo?.ssid?.let {
+                    HistoryEntity(
+                        it,
+                        DateUtil().getTime(),
+                        Constant.pingInt1,
+                        Constant.pingInt2,
+                        Constant.pingInt3
+                    )
+                }
+            if (history != null) {
+                historyEntityList.add(history)
+            }
+            SPUtils.get().putString("history", Gson().toJson(historyEntityList))
         }
     }
 }

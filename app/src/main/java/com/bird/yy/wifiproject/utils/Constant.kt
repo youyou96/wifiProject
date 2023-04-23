@@ -1,6 +1,7 @@
 package com.bird.yy.wifiproject.utils
 
 import com.bird.yy.wifiproject.entity.AdBean
+import com.bird.yy.wifiproject.entity.WIFIEntity
 import fr.bmartel.speedtest.SpeedTestReport
 
 open class Constant {
@@ -44,7 +45,6 @@ open class Constant {
         var pingInt3 = 0
         var text = "00:00:00"
         var isShowLead = true
-        var AdMapStatus: MutableMap<String, Boolean> = mutableMapOf()
-        var AdMap: MutableMap<String, AdBean> = mutableMapOf()
+        var wifiEntity: WIFIEntity? = null
     }
 }

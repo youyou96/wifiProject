@@ -27,8 +27,6 @@ abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity() {
         binding = ViewBindingUtil.create(javaClass, layoutInflater)
         setContentView(binding.root)
         supportActionBar?.hide()
-
-
     }
 
 
@@ -55,6 +53,23 @@ abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity() {
             .setMessage(content)
             .setCancelable(cancel)
             .setPositiveButton(sure, listener)
+            .create()
+        alertDialog.show()
+    }
+
+    protected open fun showDialogByActivity(
+        content: String,
+        positionContent: String,
+        cancel: Boolean = true,
+        listener: OnClickListener?,
+        negativeContent: String,
+        negativeListener: OnClickListener?
+    ) {
+        val alertDialog = AlertDialog.Builder(this)
+            .setMessage(content)
+            .setCancelable(cancel)
+            .setPositiveButton(positionContent, listener)
+            .setNegativeButton(negativeContent, negativeListener)
             .create()
         alertDialog.show()
     }
