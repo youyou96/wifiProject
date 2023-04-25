@@ -119,8 +119,9 @@ class BaseApplication : MultiDexApplication(), Application.ActivityLifecycleCall
             if (bgFlag  ) {
                 bgFlag = false
                 activity.startActivity(Intent(activity, FlashActivity::class.java))
-                getActivityManager().activityList.filterIsInstance<MainActivity>()
-                    .forEach { it.finish() }
+                if (activity is MainActivity){
+                    activity.finish()
+                }
             }
         }
 

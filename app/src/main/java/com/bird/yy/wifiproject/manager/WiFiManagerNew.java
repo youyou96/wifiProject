@@ -218,14 +218,6 @@ public class WiFiManagerNew extends BaseWiFiManager {
                     switch (supplicantState) {
                         case INTERFACE_DISABLED: // 接口禁用
                             Log.i(TAG, "onReceive: INTERFACE_DISABLED 接口禁用");
-                            WifiInfo connectFailureInfo = wifiManager.getConnectionInfo();
-                            Log.i(TAG, "onReceive: INACTIVE 接口禁用  connectFailureInfo = " + connectFailureInfo);
-                            if (null != connectFailureInfo) {
-                                Message wifiConnectFailureMessage = Message.obtain();
-                                wifiConnectFailureMessage.what = WIFI_CONNECT_FAILURE;
-                                wifiConnectFailureMessage.obj = connectFailureInfo.getSSID();
-                                mCallBackHandler.sendMessage(wifiConnectFailureMessage);
-                            }
                             break;
                         case DISCONNECTED:// 断开连接
                             Log.i(TAG, "onReceive: DISCONNECTED:// 断开连接");

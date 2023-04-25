@@ -15,7 +15,6 @@ import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.view.View
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -40,7 +39,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 
 
-const val TAG = "MainActivity"
 
 class MainActivity : BaseActivity<ActivityMainBinding>(), OnWifiScanResultsListener,
     OnWifiConnectListener, OnWifiEnabledListener {
@@ -393,8 +391,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnWifiScanResultsListe
     }
 
     override fun onWiFiConnectLog(log: String?) {
-        Log.i("MainActivity.TAG", "onWiFiConnectLog: $log")
-        if (log =="COMPLETED"){
+        if (log == "COMPLETED") {
             refreshConnectStatus(wifiManager.connectionInfo)
         }
         if (chooseWifiInfo != null) {
@@ -416,7 +413,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnWifiScanResultsListe
             if (SSID != null) {
                 val wifiInfo = wifiManager.connectionInfo
                 val wifiEntity = Constant.wifiEntity
-                Log.d("xxxxx", wifiEntity.toString())
                 if (wifiEntity != null) {
                     if (SSID == wifiInfo.ssid) {
                         SPUtils.get().putString(SSID.replace("\"", ""), Gson().toJson(wifiEntity))
@@ -426,6 +422,9 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnWifiScanResultsListe
                 if (chooseWifiInfo?.wifiSSID?.let { SSID.contains(it) } == true) {
                     Toast.makeText(applicationContext, "$SSID  connected", Toast.LENGTH_SHORT)
                         .show()
+                } else {
+                    Toast.makeText(applicationContext, "${chooseWifiInfo!!.wifiSSID}  connected fail", Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
         }
@@ -433,7 +432,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnWifiScanResultsListe
     }
 
     override fun onWiFiConnectFailure(SSID: String?) {
-        Log.i("MainActivity.TAG", "onWiFiConnectLog: $SSID")
         if (chooseWifiInfo != null) {
             if (SSID != null) {
                 if (chooseWifiInfo?.wifiSSID?.let { SSID.contains(it) } == true) {
@@ -449,13 +447,12 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnWifiScanResultsListe
         if (!enabled) {
             Toast.makeText(this@MainActivity, "WiFi not enabled", Toast.LENGTH_SHORT).show()
             refreshConnectStatus(null)
-        }else{
+        } else {
             refreshConnectStatus(wifiManager.connectionInfo)
         }
     }
 
     override fun onScanResults(scanResults: MutableList<ScanResult>?) {
-        Log.i("MainActivity.TAG", "onWiFiConnectLog: sao miao ")
         reFreshData(scanResults)
     }
 
