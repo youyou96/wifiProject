@@ -6,6 +6,7 @@ import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.annotation.RequiresApi
 import com.bird.yy.wifiproject.R
 import com.bird.yy.wifiproject.base.BaseActivity
@@ -28,7 +29,8 @@ class SecurityActivity : BaseActivity<ActivitySecurityBinding>() {
     @SuppressLint("HardwareIds")
     @RequiresApi(Build.VERSION_CODES.R)
     private fun initData() {
-        if (Constant.report != null && Constant.report?.transferRateBit?.toLong()!! > 500 * 1024) {
+        Log.d("xxxxxx",Constant.report?.transferRateBit.toString())
+        if (Constant.report != null && Constant.report?.transferRateBit?.toLong()!! > 10 * 1024 * 1024) {
             binding.statusSrc.setBackgroundResource(R.mipmap.home_connected)
             binding.homeConnectStatus.setBackgroundResource(R.drawable.connected)
         } else {

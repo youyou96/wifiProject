@@ -118,7 +118,13 @@ class NetworkTestLoadingActivity : BaseActivity<ActivitySecurityLoadingBinding>(
 
             }.onCompletion {
                 //finish
-                finish()
+                if (isSpeed){
+                    jumpActivityFinish(NetworkTestActivity::class.java)
+
+                }else{
+                    jumpActivityFinish(SecurityActivity::class.java)
+
+                }
 
             }.collect {
                 //process
@@ -131,7 +137,11 @@ class NetworkTestLoadingActivity : BaseActivity<ActivitySecurityLoadingBinding>(
                             }
                         }
                     } else {
-                        jumpActivityFinish(SecurityActivity::class.java)
+                        if (Constant.report != null) {
+                            if (Constant.pingInt1 != 0 && Constant.pingInt2 != 0 && Constant.pingInt3 != 0 && Constant.report != null) {
+                                jumpActivityFinish(SecurityActivity::class.java)
+                            }
+                        }
                     }
                 }
             }

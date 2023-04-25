@@ -131,6 +131,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnWifiScanResultsListe
         super.onStart()
         initData()
     }
+
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @SuppressLint("ServiceCast")
     private fun initData() {
@@ -163,14 +164,14 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnWifiScanResultsListe
     }
 
     private fun refreshConnectStatus(wifiInfo: WifiInfo?) {
-        if (wifiInfo != null) {
+        if (wifiInfo != null && wifiManager.isWifiEnabled) {
             binding.contentLayout.homeConnectStatus.setBackgroundResource(R.drawable.connected)
-            binding.contentLayout.homeWifiName.text = wifiInfo.ssid
+            binding.contentLayout.homeWifiName.text = wifiInfo?.ssid
             binding.contentLayout.homeWifiStatus.text = "connected wifi"
             binding.contentLayout.homeWifiIcon.setImageResource(R.mipmap.home_connected)
             binding.contentLayout.homeConnectedTv.visibility = View.VISIBLE
             binding.contentLayout.homeConnectedCl.visibility = View.VISIBLE
-            binding.contentLayout.homeConnectedName.text = wifiInfo.ssid
+            binding.contentLayout.homeConnectedName.text = wifiInfo?.ssid
 
         } else {
             binding.contentLayout.homeConnectStatus.setBackgroundResource(R.drawable.disconnected)
@@ -200,6 +201,10 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnWifiScanResultsListe
         wifiAdapter.itemClickListener = object : WIFIAdapter.ItemClickListener {
             @SuppressLint("ShowToast")
             override fun onItemClick(wifiInfo: WIFIEntity) {
+                if (!wifiManager.isWifiEnabled) {
+                    Toast.makeText(this@MainActivity, "WiFi not enabled", Toast.LENGTH_SHORT).show()
+                    return
+                }
                 chooseWifiInfo = wifiInfo
                 if (binding.drawerLayout.isOpen) {
                     return
@@ -212,7 +217,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnWifiScanResultsListe
                     //pwd dialog
 //                    showInputWIFIPasswordDialog(wifiInfo)
                     val wifiEntityJson = SPUtils.get().getString(wifiInfo.wifiSSID, "")
-                    Log.d("xxxxx",wifiInfo.wifiSSID+wifiEntityJson.toString())
                     if (wifiEntityJson != null) {
                         if (wifiEntityJson.isNotEmpty()) {
                             val wifiEntity = Gson().fromJson(wifiEntityJson, WIFIEntity::class.java)
@@ -222,7 +226,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnWifiScanResultsListe
                         }
                     }
 
-                    val pwdDialog = PwdDialog(this@MainActivity, wifiInfo.wifiSSID, wifiInfo.password)
+                    val pwdDialog =
+                        PwdDialog(this@MainActivity, wifiInfo.wifiSSID, wifiInfo.password)
                     pwdDialog.setConnectWifi { pwd ->
                         wifiInfo.password = pwd
                         Constant.wifiEntity = wifiInfo
@@ -286,21 +291,16 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnWifiScanResultsListe
 
             }
         }
-        val view = binding.settingLayout
-        val contactUs = view.findViewById<TextView>(R.id.contact_us)
-        contactUs.setOnClickListener {
+        binding.settingLayout.contactUs.setOnClickListener {
             openMail()
         }
-        val privacyPolicy = view.findViewById<TextView>(R.id.privacy_policy)
-        privacyPolicy.setOnClickListener {
+        binding.settingLayout.privacyPolicy.setOnClickListener {
             jumpActivity(PrivacyPolicyWebView::class.java)
         }
-        val updateTv = view.findViewById<TextView>(R.id.update_tv)
-        updateTv.setOnClickListener {
+        binding.settingLayout.updateTv.setOnClickListener {
             rateNow()
         }
-        val shareTv = view.findViewById<TextView>(R.id.share_tv)
-        shareTv.setOnClickListener {
+        binding.settingLayout.shareTv.setOnClickListener {
             val intent = Intent()
             intent.action = Intent.ACTION_SEND
             intent.putExtra(Intent.EXTRA_TEXT, Constant.url)
@@ -308,14 +308,22 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnWifiScanResultsListe
             startActivity(intent)
         }
         binding.contentLayout.homeSecurityCl.setOnClickListener {
-            if (binding.drawerLayout.isOpen || !wifiManager.isWifiEnabled) {
+            if (!wifiManager.isWifiEnabled) {
+                Toast.makeText(this@MainActivity, "WiFi not enabled", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            if (binding.drawerLayout.isOpen) {
                 return@setOnClickListener
             }
             jumpActivity(NetworkTestLoadingActivity::class.java)
             Constant.securityOrSpeed = "security"
         }
         binding.contentLayout.homeSpeedCl.setOnClickListener {
-            if (binding.drawerLayout.isOpen || !wifiManager.isWifiEnabled) {
+            if (!wifiManager.isWifiEnabled) {
+                Toast.makeText(this@MainActivity, "WiFi not enabled", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            if (binding.drawerLayout.isOpen) {
                 return@setOnClickListener
             }
             jumpActivity(NetworkTestLoadingActivity::class.java)
@@ -386,6 +394,9 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnWifiScanResultsListe
 
     override fun onWiFiConnectLog(log: String?) {
         Log.i("MainActivity.TAG", "onWiFiConnectLog: $log")
+        if (log =="COMPLETED"){
+            refreshConnectStatus(wifiManager.connectionInfo)
+        }
         if (chooseWifiInfo != null) {
             if (log != null) {
                 if (chooseWifiInfo?.wifiSSID?.let { log.contains(it) } == true) {
@@ -405,7 +416,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnWifiScanResultsListe
             if (SSID != null) {
                 val wifiInfo = wifiManager.connectionInfo
                 val wifiEntity = Constant.wifiEntity
-                Log.d("xxxxx",wifiEntity.toString())
+                Log.d("xxxxx", wifiEntity.toString())
                 if (wifiEntity != null) {
                     if (SSID == wifiInfo.ssid) {
                         SPUtils.get().putString(SSID.replace("\"", ""), Gson().toJson(wifiEntity))
@@ -426,6 +437,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnWifiScanResultsListe
         if (chooseWifiInfo != null) {
             if (SSID != null) {
                 if (chooseWifiInfo?.wifiSSID?.let { SSID.contains(it) } == true) {
+                    refreshConnectStatus(null)
                     Toast.makeText(applicationContext, "$SSID  connected fail", Toast.LENGTH_SHORT)
                         .show()
                 }
@@ -434,6 +446,12 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnWifiScanResultsListe
     }
 
     override fun onWifiEnabled(enabled: Boolean) {
+        if (!enabled) {
+            Toast.makeText(this@MainActivity, "WiFi not enabled", Toast.LENGTH_SHORT).show()
+            refreshConnectStatus(null)
+        }else{
+            refreshConnectStatus(wifiManager.connectionInfo)
+        }
     }
 
     override fun onScanResults(scanResults: MutableList<ScanResult>?) {
