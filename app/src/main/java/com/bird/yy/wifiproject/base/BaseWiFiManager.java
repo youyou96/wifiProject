@@ -138,10 +138,10 @@ public class BaseWiFiManager {
             config.hiddenSSID = true;
             config.wepKeys[0] = "\"" + Password + "\"";
             config.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.SHARED);
-            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
-            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
-            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP40);
-            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP104);
+//            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
+//            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
+//            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP40);
+//            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP104);
             config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
             config.wepTxKeyIndex = 0;
         }
@@ -155,8 +155,8 @@ public class BaseWiFiManager {
             config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
             config.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
             config.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
-            config.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
-            config.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
+//            config.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
+//            config.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
             config.status = WifiConfiguration.Status.ENABLED;
         }
         return config;
