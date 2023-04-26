@@ -31,6 +31,7 @@
             app:layout_constraintTop_toTopOf="@id/arrow_back" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:visibility="gone"
             android:id="@+id/home_connect_status"
             android:layout_width="match_parent"
             android:layout_height="110dp"
@@ -79,7 +80,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="28dp"
+            android:layout_marginTop="50dp"
             android:layout_marginEnd="16dp"
             android:background="@drawable/wifi_info_background"
             android:padding="24dp"

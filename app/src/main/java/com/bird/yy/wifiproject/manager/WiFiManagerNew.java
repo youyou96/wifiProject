@@ -220,8 +220,8 @@ public class WiFiManagerNew extends BaseWiFiManager {
                             Log.i(TAG, "onReceive: INTERFACE_DISABLED 接口禁用");
                             break;
                         case DISCONNECTED:// 断开连接
-//                            Log.i(TAG, "onReceive: DISCONNECTED:// 断开连接");
-//                            break;
+                            Log.i(TAG, "onReceive: DISCONNECTED:// 断开连接");
+                            break;
                         case INACTIVE: // 不活跃的
 //                            WifiInfo connectFailureInfo = wifiManager.getConnectionInfo();
 //                            Log.i(TAG, "onReceive: INACTIVE 不活跃的  connectFailureInfo = " + connectFailureInfo);

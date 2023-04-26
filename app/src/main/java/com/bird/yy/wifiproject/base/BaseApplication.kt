@@ -218,8 +218,7 @@ class BaseApplication : MultiDexApplication(), Application.ActivityLifecycleCall
         OkGo.getInstance().init(this) //必须调用初始化
             .setOkHttpClient(builder.build()) //建议设置OkHttpClient，不设置会使用默认的
             .setCacheMode(CacheMode.NO_CACHE) //全局统一缓存模式，默认不使用缓存，可以不传
-            .setCacheTime(CacheEntity.CACHE_NEVER_EXPIRE).retryCount =
-            3 //全局统一超时重连次数，默认为三次，那么最差的情况会请求4次(一次原始请求，三次重连请求)，不需要可以设置为0
+            .setCacheTime(CacheEntity.CACHE_NEVER_EXPIRE).retryCount = 3 //全局统一超时重连次数，默认为三次，那么最差的情况会请求4次(一次原始请求，三次重连请求)，不需要可以设置为0
     }
 
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
@@ -234,10 +233,11 @@ class BaseApplication : MultiDexApplication(), Application.ActivityLifecycleCall
             if (bgFlag && activity !is AdActivity) {
                 bgFlag = false
                 activity.startActivity(Intent(activity, FlashActivity::class.java))
-                getActivityManager().activityList.filterIsInstance<MainActivity>()
-                    .forEach { it.finish() }
                 SPUtils.get().putBoolean(Constant.isShowResultKey, false)
                 loadingData()
+                if (activity is MainActivity){
+                    activity.finish()
+                }
             }
         }
 

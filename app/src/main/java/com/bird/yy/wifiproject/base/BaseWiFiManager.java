@@ -87,19 +87,20 @@ public class BaseWiFiManager {
         if (TextUtils.isEmpty(ssid) || TextUtils.isEmpty(password)) {
             return -1;
         }
-        List<WifiConfiguration> wifiConfigurationList = mWifiManager.getConfiguredNetworks();
-        if (wifiConfigurationList != null && wifiConfigurationList.size() > 0) {
-            for (WifiConfiguration item : wifiConfigurationList) {
-                if (item.SSID.equals("\"" + ssid + "\"")) {
-                    return item.networkId;
-                }
-            }
-        }
+//        List<WifiConfiguration> wifiConfigurationList = mWifiManager.getConfiguredNetworks();
+//        if (wifiConfigurationList != null && wifiConfigurationList.size() > 0) {
+//            for (WifiConfiguration item : wifiConfigurationList) {
+//                if (item.SSID.equals("\"" + ssid + "\"")) {
+//                    return item.networkId;
+//                }
+//            }
+//        }
         WifiConfiguration wifiNewConfiguration = createWifiInfo(ssid, password, 3);//使用wpa2的wifi加密方式
         int newNetworkId = mWifiManager.addNetwork(wifiNewConfiguration);
         return newNetworkId;
     }
 
+    @SuppressLint("MissingPermission")
     public WifiConfiguration createWifiInfo(String SSID, String Password, int Type) {
         WifiConfiguration config = new WifiConfiguration();
         config.allowedAuthAlgorithms.clear();
@@ -108,12 +109,11 @@ public class BaseWiFiManager {
         config.allowedPairwiseCiphers.clear();
         config.allowedProtocols.clear();
         config.SSID = "\"" + SSID + "\"";
-        ;
         WifiConfiguration tempConfig = null;
         if (isWifiEnabled()) {
             try {
-                @SuppressLint("MissingPermission")
-                List<WifiConfiguration> existingConfigs = mWifiManager.getConfiguredNetworks();
+                List<WifiConfiguration> existingConfigs= mWifiManager.getConfiguredNetworks();
+                Log.d("xxxxxx","existingConfigs   "+existingConfigs.toString());
                 if (existingConfigs != null) {
                     for (WifiConfiguration existingConfig : existingConfigs) {
                         if (existingConfig.SSID.equals("\"" + SSID + "\"")) {
@@ -122,7 +122,7 @@ public class BaseWiFiManager {
                     }
                 }
             } catch (Exception e) {
-
+                Log.d("xxxxxx",e.toString());
             }
         }
         if (tempConfig != null) {
@@ -138,10 +138,10 @@ public class BaseWiFiManager {
             config.hiddenSSID = true;
             config.wepKeys[0] = "\"" + Password + "\"";
             config.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.SHARED);
-            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
-            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
-            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP40);
-            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP104);
+//            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
+//            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
+//            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP40);
+//            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP104);
             config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
             config.wepTxKeyIndex = 0;
         }
@@ -155,8 +155,8 @@ public class BaseWiFiManager {
             config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
             config.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
             config.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
-            config.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
-            config.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
+//            config.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
+//            config.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
             config.status = WifiConfiguration.Status.ENABLED;
         }
         return config;

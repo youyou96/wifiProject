@@ -39,7 +39,6 @@ class NetworkTestActivity : BaseActivity<ActivityNetworkTestBinding>() {
             binding.gameType.text = "The game can be played normally"
         }
         if (Constant.report != null) {
-            Log.d("xxxx", Constant.report!!.transferRateBit.toString())
             if (Constant.report!!.transferRateBit.toLong() < 2 * 1024 * 1024) {
                 binding.videoTitle.text = "Accordng to your speed,We recommend \n 360P videos"
                 binding.tv360.setTextColor(resources.getColor(R.color.color34CC32))
@@ -53,7 +52,6 @@ class NetworkTestActivity : BaseActivity<ActivityNetworkTestBinding>() {
                 binding.line1.setBackgroundResource(R.color.colorB7C3FF)
                 binding.line2.setBackgroundResource(R.color.colorB7C3FF)
                 binding.line3.setBackgroundResource(R.color.colorB7C3FF)
-                Log.d("xxxx", "00000000")
             } else if (Constant.report!!.transferRateBit.toLong() < 5 * 1024 * 1024) {
                 binding.videoTitle.text = "Accordng to your speed,We recommend \n 720P videos"
                 binding.tv360.setTextColor(resources.getColor(R.color.color34CC32))
@@ -67,7 +65,6 @@ class NetworkTestActivity : BaseActivity<ActivityNetworkTestBinding>() {
                 binding.line1.setBackgroundResource(R.color.color34CC32)
                 binding.line2.setBackgroundResource(R.color.colorB7C3FF)
                 binding.line3.setBackgroundResource(R.color.colorB7C3FF)
-                Log.d("xxxx", "11111111")
 
             } else if (Constant.report!!.transferRateBit.toLong() < 10 * 1024 * 1024) {
                 binding.videoTitle.text = "Accordng to your speed,We recommend \n 1080P videos"
@@ -82,7 +79,6 @@ class NetworkTestActivity : BaseActivity<ActivityNetworkTestBinding>() {
                 binding.line1.setBackgroundResource(R.color.color34CC32)
                 binding.line2.setBackgroundResource(R.color.color34CC32)
                 binding.line3.setBackgroundResource(R.color.colorB7C3FF)
-                Log.d("xxxx", "222222222")
 
             } else {
                 binding.videoTitle.text = "Accordng to your speed,We recommend \n 4k videos"
@@ -97,9 +93,21 @@ class NetworkTestActivity : BaseActivity<ActivityNetworkTestBinding>() {
                 binding.line1.setBackgroundResource(R.color.color34CC32)
                 binding.line2.setBackgroundResource(R.color.color34CC32)
                 binding.line3.setBackgroundResource(R.color.color34CC32)
-                Log.d("xxxx", "33333333")
 
             }
+        }else{
+            binding.videoTitle.text = "Accordng to your speed,We recommend \n 360P videos"
+            binding.tv360.setTextColor(resources.getColor(R.color.color34CC32))
+            binding.tv720.setTextColor(resources.getColor(R.color.colorB7C3FF))
+            binding.tv1080.setTextColor(resources.getColor(R.color.colorB7C3FF))
+            binding.tv4k.setTextColor(resources.getColor(R.color.colorB7C3FF))
+            binding.iv360.setBackgroundResource(R.drawable.network_green)
+            binding.iv720.setBackgroundResource(R.drawable.network_gray)
+            binding.iv1080.setBackgroundResource(R.drawable.network_gray)
+            binding.iv4k.setBackgroundResource(R.drawable.network_gray)
+            binding.line1.setBackgroundResource(R.color.colorB7C3FF)
+            binding.line2.setBackgroundResource(R.color.colorB7C3FF)
+            binding.line3.setBackgroundResource(R.color.colorB7C3FF)
         }
         val historyEntityLisJson = SPUtils.get().getString("history", "")
         var historyEntityList = arrayListOf<HistoryEntity>()
