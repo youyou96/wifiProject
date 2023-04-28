@@ -14,7 +14,7 @@
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <application
-        android:name=".base.BaseApplication"
+        android:name="com.bird.yy.wifiproject.base.BaseApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -24,8 +24,9 @@
         android:theme="@style/Theme.WifiProject"
         tools:replace="android:fullBackupContent,android:theme,android:supportsRtl"
         tools:targetApi="31">
+        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
         <activity
-            android:name=".MainActivity"
+            android:name="com.bird.yy.wifiproject.MainActivity"
             android:exported="true"
             android:launchMode="singleTask"
             android:screenOrientation="portrait">
@@ -36,7 +37,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.FlashActivity"
+            android:name="com.bird.yy.wifiproject.activity.FlashActivity"
             android:exported="true"
             android:launchMode="singleTop"
             android:screenOrientation="portrait">
@@ -47,39 +48,39 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.NetworkTestLoadingActivity"
+            android:name="com.bird.yy.wifiproject.activity.NetworkTestLoadingActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.ActivityHistory"
+            android:name="com.bird.yy.wifiproject.activity.ActivityHistory"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.SecurityActivity"
+            android:name="com.bird.yy.wifiproject.activity.SecurityActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.PrivacyPolicyWebView"
+            android:name="com.bird.yy.wifiproject.activity.PrivacyPolicyWebView"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.NetworkTestActivity"
+            android:name="com.bird.yy.wifiproject.activity.NetworkTestActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.VpnHomeActivity"
+            android:name="com.bird.yy.wifiproject.activity.VpnHomeActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.VpnLeadActivity"
+            android:name="com.bird.yy.wifiproject.activity.VpnLeadActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.VpnResultActivity"
+            android:name="com.bird.yy.wifiproject.activity.VpnResultActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.ServersActivity"
+            android:name="com.bird.yy.wifiproject.activity.ServersActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
     </application>

@@ -1,6 +1,6 @@
 package com.bird.yy.wifiproject.entity
 
-import com.bird.yy.wifiproject.R
+import com.wifianalyzer.secure.fast.R
 
 
 data class Country(

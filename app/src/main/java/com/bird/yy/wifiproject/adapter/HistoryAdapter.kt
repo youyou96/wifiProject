@@ -5,8 +5,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.bird.yy.wifiproject.R
 import com.bird.yy.wifiproject.entity.HistoryEntity
+import com.wifianalyzer.secure.fast.R
 
 class HistoryAdapter :RecyclerView.Adapter<HistoryAdapter.HistoryViewHolder>(){
     private var historyEntityList = ArrayList<HistoryEntity>()

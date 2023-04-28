@@ -8,8 +8,8 @@ import android.widget.TextView
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.RecyclerView
-import com.bird.yy.wifiproject.R
 import com.bird.yy.wifiproject.entity.WIFIEntity
+import com.wifianalyzer.secure.fast.R
 
 class WIFIAdapter : RecyclerView.Adapter<WIFIAdapter.WIFIViewHolder>() {
 

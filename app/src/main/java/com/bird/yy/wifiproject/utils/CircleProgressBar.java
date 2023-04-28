@@ -8,7 +8,7 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
 
-import com.bird.yy.wifiproject.R;
+import com.wifianalyzer.secure.fast.R;
 
 public class CircleProgressBar extends View {
     // 画圆环的画笔

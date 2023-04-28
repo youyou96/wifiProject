@@ -8,7 +8,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 
 import com.airbnb.lottie.LottieAnimationView;
-import com.bird.yy.wifiproject.R;
+import com.wifianalyzer.secure.fast.R;
 
 public class CustomizedDialog extends Dialog {
     private String filePath;

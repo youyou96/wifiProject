@@ -1,10 +1,10 @@
 package com.bird.yy.wifiproject.utils
 
 import android.content.Context
-import com.bird.yy.wifiproject.R
 import com.github.shadowsocks.database.Profile
 import com.bird.yy.wifiproject.entity.Country
 import com.bird.yy.wifiproject.entity.CountryBean
+import com.wifianalyzer.secure.fast.R
 import java.io.BufferedReader
 import java.io.InputStreamReader
 

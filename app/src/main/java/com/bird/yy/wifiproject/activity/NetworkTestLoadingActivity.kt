@@ -7,9 +7,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.animation.AnimationUtils
 import androidx.lifecycle.lifecycleScope
-import com.bird.yy.wifiproject.R
 import com.bird.yy.wifiproject.base.BaseActivity
-import com.bird.yy.wifiproject.databinding.ActivitySecurityLoadingBinding
 import com.bird.yy.wifiproject.entity.HistoryEntity
 import com.bird.yy.wifiproject.utils.Constant
 import com.bird.yy.wifiproject.utils.DateUtil
@@ -17,6 +15,8 @@ import com.bird.yy.wifiproject.utils.InterNetUtil
 import com.bird.yy.wifiproject.utils.SPUtils
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.wifianalyzer.secure.fast.R
+import com.wifianalyzer.secure.fast.databinding.ActivitySecurityLoadingBinding
 import fr.bmartel.speedtest.SpeedTestReport
 import fr.bmartel.speedtest.SpeedTestSocket
 import fr.bmartel.speedtest.inter.ISpeedTestListener

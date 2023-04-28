@@ -8,8 +8,8 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.bird.yy.wifiproject.R
 import com.bird.yy.wifiproject.entity.Country
+import com.wifianalyzer.secure.fast.R
 
 class ServersAdapter : RecyclerView.Adapter<ServersAdapter.ServersViewHolder>() {
     private var countryEntityList = ArrayList<Country>()

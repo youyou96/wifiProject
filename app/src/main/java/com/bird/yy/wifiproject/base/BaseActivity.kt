@@ -10,7 +10,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.Lifecycle
 import androidx.viewbinding.ViewBinding
-import com.bird.yy.wifiproject.R
 import com.bird.yy.wifiproject.utils.ViewBindingUtil
 import com.gyf.immersionbar.ImmersionBar
 import com.gyf.immersionbar.ktx.immersionBar

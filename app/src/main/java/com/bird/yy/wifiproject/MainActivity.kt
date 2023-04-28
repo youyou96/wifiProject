@@ -26,7 +26,6 @@ import com.bird.yy.wifiproject.activity.PrivacyPolicyWebView
 import com.bird.yy.wifiproject.activity.VpnLeadActivity
 import com.bird.yy.wifiproject.adapter.WIFIAdapter
 import com.bird.yy.wifiproject.base.BaseActivity
-import com.bird.yy.wifiproject.databinding.ActivityMainBinding
 import com.bird.yy.wifiproject.dialog.PwdDialog
 import com.bird.yy.wifiproject.entity.WIFIEntity
 import com.bird.yy.wifiproject.listener.OnWifiConnectListener
@@ -37,7 +36,8 @@ import com.bird.yy.wifiproject.utils.Constant
 import com.bird.yy.wifiproject.utils.SPUtils
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
-
+import com.wifianalyzer.secure.fast.R
+import com.wifianalyzer.secure.fast.databinding.ActivityMainBinding
 
 
 class MainActivity : BaseActivity<ActivityMainBinding>(), OnWifiScanResultsListener,

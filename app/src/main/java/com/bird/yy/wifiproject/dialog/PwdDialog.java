@@ -20,8 +20,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-import com.bird.yy.wifiproject.R;
 import com.bird.yy.wifiproject.utils.Constant;
+import com.wifianalyzer.secure.fast.R;
 
 public class PwdDialog extends Dialog {
     private ConnectWifiListener connectWifi;

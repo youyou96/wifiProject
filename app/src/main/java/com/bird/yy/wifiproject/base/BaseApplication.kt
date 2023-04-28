@@ -17,6 +17,8 @@ import com.bird.yy.wifiproject.activity.VpnHomeActivity
 import com.bird.yy.wifiproject.manager.ActivityManager
 import com.bird.yy.wifiproject.utils.SPUtils
 import com.github.shadowsocks.Core
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.ktx.initialize
 import com.lzy.okgo.OkGo
 import com.lzy.okgo.cache.CacheEntity
 import com.lzy.okgo.cache.CacheMode
@@ -47,6 +49,7 @@ class BaseApplication : MultiDexApplication(), Application.ActivityLifecycleCall
         super.onCreate()
         Core.init(this, VpnHomeActivity::class)
         if (applicationContext.packageName.equals(getCurrentProcessName())) {
+            Firebase.initialize(this)
             initOkGo()
             SPUtils.get().init(this)
             registerActivityLifecycleCallbacks(this)

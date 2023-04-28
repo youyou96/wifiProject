@@ -2,11 +2,11 @@ package com.bird.yy.wifiproject.activity
 
 import android.os.Bundle
 import android.os.SystemClock
-import com.bird.yy.wifiproject.R
 import com.bird.yy.wifiproject.base.BaseActivity
-import com.bird.yy.wifiproject.databinding.ActivityVpnResultBinding
 import com.bird.yy.wifiproject.utils.Constant
 import com.bird.yy.wifiproject.utils.SPUtils
+import com.wifianalyzer.secure.fast.R
+import com.wifianalyzer.secure.fast.databinding.ActivityVpnResultBinding
 import java.text.SimpleDateFormat
 import java.util.*
 

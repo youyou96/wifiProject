@@ -6,8 +6,8 @@ import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import com.bird.yy.wifiproject.base.BaseActivity
-import com.bird.yy.wifiproject.databinding.ActivityPrivacyPolicyBinding
 import com.bird.yy.wifiproject.utils.Constant
+import com.wifianalyzer.secure.fast.databinding.ActivityPrivacyPolicyBinding
 
 class PrivacyPolicyWebView : BaseActivity<ActivityPrivacyPolicyBinding>() {
 

@@ -2,18 +2,15 @@ package com.bird.yy.wifiproject.activity
 
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.view.View
-import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.bird.yy.wifiproject.MainActivity
-import com.bird.yy.wifiproject.R
 import com.bird.yy.wifiproject.base.BaseActivity
-import com.bird.yy.wifiproject.databinding.ActivityFlashBinding
 import com.bird.yy.wifiproject.utils.Constant
 import com.bird.yy.wifiproject.utils.EntityUtils
 import com.bird.yy.wifiproject.utils.InterNetUtil
 import com.bird.yy.wifiproject.utils.SPUtils
 import com.bird.yy.wifiproject.viewModel.FlashViewModel
+import com.wifianalyzer.secure.fast.databinding.ActivityFlashBinding
 
 
 private const val COUNTER_TIME = 3L

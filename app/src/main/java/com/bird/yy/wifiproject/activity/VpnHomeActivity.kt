@@ -11,9 +11,7 @@ import android.widget.Toast
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceDataStore
-import com.bird.yy.wifiproject.R
 import com.bird.yy.wifiproject.base.BaseActivity
-import com.bird.yy.wifiproject.databinding.ActivityVpnHomeBinding
 import com.bird.yy.wifiproject.entity.Country
 import com.bird.yy.wifiproject.entity.CountryBean
 import com.bird.yy.wifiproject.entity.SmartBean
@@ -28,6 +26,8 @@ import com.github.shadowsocks.utils.Key
 import com.github.shadowsocks.utils.StartService
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.wifianalyzer.secure.fast.R
+import com.wifianalyzer.secure.fast.databinding.ActivityVpnHomeBinding
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onCompletion

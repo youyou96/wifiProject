@@ -9,7 +9,7 @@ open class Constant {
         const val packageName: String = "package:com.bird.yy.wifiproject"
         const val url: String = "https://play.google.com/store/apps/details?id="
         const val mail: String = "1192390712@qq.com"
-        const val PrivacyPolicy = "https://www.baidu.com"
+        const val PrivacyPolicy = "https://sites.google.com/view/fast-key-wifi-analyzer/home"
         const val ping1 = "202.108.22.5"
         const val ping2 = "14.119.104.189"
         const val ping3 = "14.119.104.189"

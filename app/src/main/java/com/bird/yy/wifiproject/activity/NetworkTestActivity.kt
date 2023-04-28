@@ -5,15 +5,15 @@ import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.util.Log
-import com.bird.yy.wifiproject.R
 import com.bird.yy.wifiproject.base.BaseActivity
-import com.bird.yy.wifiproject.databinding.ActivityNetworkTestBinding
 import com.bird.yy.wifiproject.entity.HistoryEntity
 import com.bird.yy.wifiproject.utils.Constant
 import com.bird.yy.wifiproject.utils.DateUtil
 import com.bird.yy.wifiproject.utils.SPUtils
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.wifianalyzer.secure.fast.R
+import com.wifianalyzer.secure.fast.databinding.ActivityNetworkTestBinding
 import java.lang.reflect.Type
 
 class NetworkTestActivity : BaseActivity<ActivityNetworkTestBinding>() {

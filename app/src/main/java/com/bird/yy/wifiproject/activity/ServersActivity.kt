@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import com.bird.yy.wifiproject.adapter.ServersAdapter
 import com.bird.yy.wifiproject.base.BaseActivity
-import com.bird.yy.wifiproject.databinding.ActivityVpnServiceBinding
 import com.bird.yy.wifiproject.entity.Country
 import com.bird.yy.wifiproject.entity.CountryBean
 import com.bird.yy.wifiproject.utils.Constant
@@ -12,6 +11,7 @@ import com.bird.yy.wifiproject.utils.EntityUtils
 import com.bird.yy.wifiproject.utils.SPUtils
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.wifianalyzer.secure.fast.databinding.ActivityVpnServiceBinding
 import org.greenrobot.eventbus.EventBus
 import java.lang.reflect.Type
 

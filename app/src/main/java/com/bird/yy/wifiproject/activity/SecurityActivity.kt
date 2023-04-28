@@ -8,10 +8,10 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.annotation.RequiresApi
-import com.bird.yy.wifiproject.R
 import com.bird.yy.wifiproject.base.BaseActivity
-import com.bird.yy.wifiproject.databinding.ActivitySecurityBinding
 import com.bird.yy.wifiproject.utils.Constant
+import com.wifianalyzer.secure.fast.R
+import com.wifianalyzer.secure.fast.databinding.ActivitySecurityBinding
 
 class SecurityActivity : BaseActivity<ActivitySecurityBinding>() {
     private var wifiInfo: WifiInfo? = null

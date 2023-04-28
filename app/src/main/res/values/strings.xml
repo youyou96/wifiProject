@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">wifiProject</string>
+    <string name="app_name" translatable="false">Fast key WIFI analyzer</string>
+    <string name="facebook_app_id" translatable="false">804691757207624</string>
 </resources>
