@@ -1,11 +1,13 @@
 package com.bird.yy.wifiproject.activity
 
 import android.content.Context
+import android.content.Intent
 import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.util.Log
 import android.view.animation.AnimationUtils
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import com.bird.yy.wifiproject.R
 import com.bird.yy.wifiproject.base.BaseActivity
@@ -27,6 +29,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
+import timber.log.Timber
 import java.lang.reflect.Type
 
 class NetworkTestLoadingActivity : BaseActivity<ActivitySecurityLoadingBinding>() {
@@ -34,6 +37,7 @@ class NetworkTestLoadingActivity : BaseActivity<ActivitySecurityLoadingBinding>(
     private var wifiInfo: WifiInfo? = null
     private lateinit var wifiManager: WifiManager
     private var isShowInter = false
+    private var isLoadAd = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
@@ -70,7 +74,8 @@ class NetworkTestLoadingActivity : BaseActivity<ActivitySecurityLoadingBinding>(
 
     private fun initListener() {
         binding.arrowBack.setOnClickListener {
-            connectionJob?.cancel()
+//            isShowInter = true
+//            connectionJob?.cancel()
             finish()
         }
     }
@@ -121,7 +126,6 @@ class NetworkTestLoadingActivity : BaseActivity<ActivitySecurityLoadingBinding>(
 
             }.onCompletion {
                 //finish
-                Log.d("AdManage", "xxxxxxx")
                 if (!isShowInter) {
                     jumpActivity()
                 }
@@ -131,7 +135,11 @@ class NetworkTestLoadingActivity : BaseActivity<ActivitySecurityLoadingBinding>(
                     if (Constant.report != null) {
                         if (Constant.pingInt1 != 0 && Constant.pingInt2 != 0 && Constant.pingInt3 != 0 && Constant.report != null) {
                             lifecycleScope.launch(Dispatchers.Main) {
-                                loadInterAd()
+
+                                if (!isLoadAd) {
+                                    isLoadAd = true
+                                    loadInterAd()
+                                }
                             }
                         }
                     }
@@ -146,10 +154,15 @@ class NetworkTestLoadingActivity : BaseActivity<ActivitySecurityLoadingBinding>(
     }
 
     private fun loadInterAd() {
+        if (isShowInter) {
+            return
+        }
         val adBeanInter = Constant.AdMap[Constant.adInterstitial_wifi]
         if (adBeanInter != null) {
+            Log.d("AdManage", "xxxxxxx")
             val time = System.currentTimeMillis() - adBeanInter.saveTime
             if (time > Constant.timeOut || adBeanInter.ad == null) {
+                Timber.tag("AdManage").d("xxxxxxx111111 $adBeanInter")
                 AdManage().loadAd(
                     Constant.adInterstitial_wifi,
                     this,
@@ -164,7 +177,7 @@ class NetworkTestLoadingActivity : BaseActivity<ActivitySecurityLoadingBinding>(
                         override fun isMax() {
                             connectionJob?.cancel()
                             isShowInter = true
-                            Log.d("AdManage", "xxxxxxx111111")
+
                             jumpActivity()
                         }
 
@@ -174,6 +187,7 @@ class NetworkTestLoadingActivity : BaseActivity<ActivitySecurityLoadingBinding>(
                 showInterAd(adBeanInter)
             }
         } else {
+            Log.d("AdManage", "xxxxxxx222222")
             AdManage().loadAd(
                 Constant.adInterstitial_wifi,
                 this,
@@ -188,7 +202,7 @@ class NetworkTestLoadingActivity : BaseActivity<ActivitySecurityLoadingBinding>(
                     override fun isMax() {
                         isShowInter = true
                         connectionJob?.cancel()
-                        Log.d("AdManage", "xxxxxxx222222")
+
                         jumpActivity()
                     }
 
@@ -218,13 +232,22 @@ class NetworkTestLoadingActivity : BaseActivity<ActivitySecurityLoadingBinding>(
     }
 
     private fun jumpActivity() {
-        lifecycleScope.launch(Dispatchers.Main) {
-            if (isSpeed) {
-                jumpActivityFinish(NetworkTestActivity::class.java)
-
-            } else {
-                jumpActivityFinish(SecurityActivity::class.java)
+        if (isSpeed) {
+            if (lifecycle.currentState == Lifecycle.State.RESUMED || lifecycle.currentState == Lifecycle.State.STARTED) {
+                startActivity(
+                    Intent(
+                        this@NetworkTestLoadingActivity,
+                        NetworkTestActivity::class.java
+                    )
+                )
+                finish()
+            }
+        } else {
+            if (lifecycle.currentState == Lifecycle.State.RESUMED || lifecycle.currentState == Lifecycle.State.STARTED) {
+                startActivity(Intent(this@NetworkTestLoadingActivity, SecurityActivity::class.java))
+                finish()
             }
         }
     }
+
 }

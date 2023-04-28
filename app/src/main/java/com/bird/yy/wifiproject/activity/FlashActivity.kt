@@ -98,28 +98,9 @@ class FlashActivity : BaseActivity<ActivityFlashBinding>() {
 
     private fun showAd() {
         Timber.tag("RemoteConfig").d(" flash11 put adResourceBean")
-
         val adBean = Constant.AdMap[Constant.adOpen_wifi]
         val adManage = AdManage()
-
-        if (adBean?.ad != null) {
-            timer?.cancel()
-            adManage.showAd(
-                this@FlashActivity,
-                Constant.adOpen_wifi,
-                adBean,
-                null,
-                object : AdManage.OnShowAdCompleteListener {
-                    override fun onShowAdComplete() {
-                        jumpActivityFinish(MainActivity::class.java)
-                    }
-
-                    override fun isMax() {
-                        jumpActivityFinish(MainActivity::class.java)
-                    }
-
-                })
-        } else {
+        if (adBean == null) {
             adManage.loadAd(Constant.adOpen_wifi, this, object : AdManage.OnLoadAdCompleteListener {
                 override fun onLoadAdComplete(ad: AdBean?) {
                 }
@@ -129,6 +110,39 @@ class FlashActivity : BaseActivity<ActivityFlashBinding>() {
                 }
 
             })
+        } else {
+            val time = System.currentTimeMillis() - adBean.saveTime
+            if (time > Constant.timeOut || adBean.ad == null) {
+                adManage.loadAd(
+                    Constant.adOpen_wifi,
+                    this,
+                    object : AdManage.OnLoadAdCompleteListener {
+                        override fun onLoadAdComplete(ad: AdBean?) {
+                        }
+
+                        override fun isMax() {
+                            jumpActivityFinish(MainActivity::class.java)
+                        }
+
+                    })
+            } else {
+                timer?.cancel()
+                adManage.showAd(
+                    this@FlashActivity,
+                    Constant.adOpen_wifi,
+                    adBean,
+                    null,
+                    object : AdManage.OnShowAdCompleteListener {
+                        override fun onShowAdComplete() {
+                            jumpActivityFinish(MainActivity::class.java)
+                        }
+
+                        override fun isMax() {
+                            jumpActivityFinish(MainActivity::class.java)
+                        }
+
+                    })
+            }
         }
     }
 
@@ -184,7 +198,7 @@ class FlashActivity : BaseActivity<ActivityFlashBinding>() {
                     remoteConfigJob?.cancel()
                     Timber.tag("RemoteConfig")
                         .d(" get remote config successful ${adResourceBeanJson.toString()}")
-                }else{
+                } else {
                     Timber.tag("RemoteConfig")
                         .d(" get remote config fail num}")
                 }
@@ -192,6 +206,7 @@ class FlashActivity : BaseActivity<ActivityFlashBinding>() {
         }
 
     }
+
     private fun loadingData() {
         //load ad
         Timber.tag("RemoteConfig").d(" application put adResourceBean")
@@ -204,8 +219,9 @@ class FlashActivity : BaseActivity<ActivityFlashBinding>() {
                     this,
                     object : AdManage.OnLoadAdCompleteListener {
                         override fun onLoadAdComplete(ad: AdBean?) {
-                            if(ad?.ad != null){
-                                EventBus.getDefault().post(MessageEvent(Constant.adNative_wifi_h,ad))
+                            if (ad?.ad != null) {
+                                EventBus.getDefault()
+                                    .post(MessageEvent(Constant.adNative_wifi_h, ad))
                             }
 
                         }
@@ -219,8 +235,8 @@ class FlashActivity : BaseActivity<ActivityFlashBinding>() {
             AdManage().loadAd(Constant.adNative_wifi_h, this,
                 object : AdManage.OnLoadAdCompleteListener {
                     override fun onLoadAdComplete(ad: AdBean?) {
-                        if(ad?.ad != null){
-                            EventBus.getDefault().post(MessageEvent(Constant.adNative_wifi_h,ad))
+                        if (ad?.ad != null) {
+                            EventBus.getDefault().post(MessageEvent(Constant.adNative_wifi_h, ad))
                         }
                     }
 
@@ -238,8 +254,9 @@ class FlashActivity : BaseActivity<ActivityFlashBinding>() {
                 AdManage().loadAd(Constant.adNative_wifi_p, this,
                     object : AdManage.OnLoadAdCompleteListener {
                         override fun onLoadAdComplete(ad: AdBean?) {
-                            if(ad?.ad != null){
-                                EventBus.getDefault().post(MessageEvent(Constant.adNative_wifi_p,ad))
+                            if (ad?.ad != null) {
+                                EventBus.getDefault()
+                                    .post(MessageEvent(Constant.adNative_wifi_p, ad))
                             }
                         }
 
@@ -252,8 +269,8 @@ class FlashActivity : BaseActivity<ActivityFlashBinding>() {
             AdManage().loadAd(Constant.adNative_wifi_p, this,
                 object : AdManage.OnLoadAdCompleteListener {
                     override fun onLoadAdComplete(ad: AdBean?) {
-                        if(ad?.ad != null){
-                            EventBus.getDefault().post(MessageEvent(Constant.adNative_wifi_p,ad))
+                        if (ad?.ad != null) {
+                            EventBus.getDefault().post(MessageEvent(Constant.adNative_wifi_p, ad))
                         }
                     }
 
@@ -270,8 +287,9 @@ class FlashActivity : BaseActivity<ActivityFlashBinding>() {
                 AdManage().loadAd(Constant.adNative_wifi_history, this,
                     object : AdManage.OnLoadAdCompleteListener {
                         override fun onLoadAdComplete(ad: AdBean?) {
-                            if(ad?.ad != null){
-                                EventBus.getDefault().post(MessageEvent(Constant.adNative_wifi_history,ad))
+                            if (ad?.ad != null) {
+                                EventBus.getDefault()
+                                    .post(MessageEvent(Constant.adNative_wifi_history, ad))
                             }
                         }
 
@@ -284,8 +302,9 @@ class FlashActivity : BaseActivity<ActivityFlashBinding>() {
             AdManage().loadAd(Constant.adNative_wifi_history, this,
                 object : AdManage.OnLoadAdCompleteListener {
                     override fun onLoadAdComplete(ad: AdBean?) {
-                        if(ad?.ad != null){
-                            EventBus.getDefault().post(MessageEvent(Constant.adNative_wifi_history,ad))
+                        if (ad?.ad != null) {
+                            EventBus.getDefault()
+                                .post(MessageEvent(Constant.adNative_wifi_history, ad))
                         }
                     }
 
@@ -301,8 +320,9 @@ class FlashActivity : BaseActivity<ActivityFlashBinding>() {
                 AdManage().loadAd(Constant.adNative_wifi_s, this,
                     object : AdManage.OnLoadAdCompleteListener {
                         override fun onLoadAdComplete(ad: AdBean?) {
-                            if(ad?.ad != null){
-                                EventBus.getDefault().post(MessageEvent(Constant.adNative_wifi_s,ad))
+                            if (ad?.ad != null) {
+                                EventBus.getDefault()
+                                    .post(MessageEvent(Constant.adNative_wifi_s, ad))
                             }
                         }
 
@@ -315,8 +335,8 @@ class FlashActivity : BaseActivity<ActivityFlashBinding>() {
             AdManage().loadAd(Constant.adNative_wifi_s, this,
                 object : AdManage.OnLoadAdCompleteListener {
                     override fun onLoadAdComplete(ad: AdBean?) {
-                        if(ad?.ad != null){
-                            EventBus.getDefault().post(MessageEvent(Constant.adNative_wifi_s,ad))
+                        if (ad?.ad != null) {
+                            EventBus.getDefault().post(MessageEvent(Constant.adNative_wifi_s, ad))
                         }
                     }
 

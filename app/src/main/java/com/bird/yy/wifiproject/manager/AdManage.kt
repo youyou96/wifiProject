@@ -288,11 +288,12 @@ class AdManage {
                 LOG_TAG,
                 "广告加载成功  优先级： ${adBean.serpac_pri}   广告ID： ${adBean.serpac_id} 广告位：${adType}"
             )
-            adBean.ad = nativeAd
-            adBean.saveTime = System.currentTimeMillis()
-            Constant.AdMap[adType] = adBean
-            onLoadAdCompleteListener.onLoadAdComplete(adBean)
-
+            if (nativeAd.headline?.isNotEmpty() == true){
+                adBean.ad = nativeAd
+                adBean.saveTime = System.currentTimeMillis()
+                Constant.AdMap[adType] = adBean
+                onLoadAdCompleteListener.onLoadAdComplete(adBean)
+            }
         }
         val location = NativeAdOptions.ADCHOICES_TOP_RIGHT
         val adLoader =
@@ -363,7 +364,6 @@ class AdManage {
             /** Called when full screen content is dismissed. */
             override fun onAdDismissedFullScreenContent() {
                 // Set the reference to null so isAdAvailable() returns false.
-                Constant.AdMap[adType]?.ad = null
                 Log.e(
                     LOG_TAG,
                     "广告取消成功  优先级：  ${adBean?.serpac_pri}   广告ID： ${adBean?.serpac_id} 广告位：${adType}"
@@ -413,7 +413,6 @@ class AdManage {
             /** Called when full screen content is dismissed. */
             override fun onAdDismissedFullScreenContent() {
                 // Set the reference to null so isAdAvailable() returns false.
-                Constant.AdMap[adType]?.ad = null
                 Log.e(
                     LOG_TAG,
                     "广告消失 优先级：  ${adBean?.serpac_pri}   广告ID： ${adBean?.serpac_id} 广告位：${adType}"
@@ -435,6 +434,7 @@ class AdManage {
             override fun onAdShowedFullScreenContent() {
                 addClickTimeOrShowTime(1, 0)
                 Constant.AdMap[adType]?.ad = null
+                AdManage().loadAd(adType, activity)
                 Log.e(
                     LOG_TAG,
                     "广告展示成功 优先级： ${adBean?.serpac_pri}   广告ID： ${adBean?.serpac_id}  广告位：${adBean}"
@@ -482,19 +482,13 @@ class AdManage {
             nativeAdView.bodyView = adViewResultBinding.adContent
             nativeAdView.callToActionView = adViewResultBinding.adCallToAction
             nativeAdView.iconView = adViewResultBinding.adAppIcon
+            Log.e(LOG_TAG, "nativeAd app headline ==${nativeAd.headline}")
+            Log.e(LOG_TAG, "nativeAd app body ==${nativeAd.body}")
             if (nativeAd.callToAction == null) {
                 adViewResultBinding.adCallToAction.visibility = View.INVISIBLE
             } else {
                 adViewResultBinding.adCallToAction.visibility = View.VISIBLE
-//            adCallToAction.text = nativeAd.callToAction
             }
-//            if (adType == Constant.adNative_vpn_h) {
-//                adViewResultBinding.homeAdLabel.visibility = View.VISIBLE
-//                adViewResultBinding.resultAdLabel.visibility = View.GONE
-//            } else {
-//                adViewResultBinding.resultAdLabel.visibility = View.VISIBLE
-//                adViewResultBinding.homeAdLabel.visibility = View.GONE
-//            }
             val adAppIcon = adViewResultBinding.adAppIcon
 
             val adContent = adViewResultBinding.adContent
@@ -562,7 +556,7 @@ class AdManage {
         } else {
             adTimeBean.showTime = showNum
             adTimeBean.clickTime = clickNum
-            adTimeBean.timeLast = DateUtil().getTime()
+            adTimeBean.timeLast = DateUtil().getTimeDay()
         }
         SPUtils.get().putString(Constant.adTimeBean, Gson().toJson(adTimeBean))
     }
@@ -571,7 +565,7 @@ class AdManage {
         val adTimeBeanJson = SPUtils.get().getString(Constant.adTimeBean, "")
         if (adTimeBeanJson != null && adTimeBeanJson.isNotEmpty()) {
             val adTimeBean = Gson().fromJson(adTimeBeanJson, AdTimeBean::class.java) ?: return false
-            if (adTimeBean.timeLast != DateUtil().getTime()) return false
+            if (adTimeBean.timeLast != DateUtil().getTimeDay()) return false
             val showTime: Int = adTimeBean.showTime
             val clickTime: Int = adTimeBean.clickTime
             val adResourceBeanJson = SPUtils.get().getString(Constant.adResourceBean, "")

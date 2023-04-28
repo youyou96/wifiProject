@@ -26,7 +26,8 @@
             android:padding="10dp"
             android:text="Contact us"
             android:textColor="@color/white"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/privacy_policy"

@@ -27,9 +27,25 @@ class NetworkTestActivity : BaseActivity<ActivityNetworkTestBinding>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
-        binding.routerSpeed.text = "${Constant.pingInt1}ms"
-        binding.totalGameSpeed.text = "${Constant.pingInt2}ms"
-        binding.cnSpeed.text = "${Constant.pingInt3}ms"
+        if (Constant.pingInt1 > 1000) {
+            binding.routerSpeed.text = ">1000ms"
+
+        } else {
+            binding.routerSpeed.text = "${Constant.pingInt1}ms"
+
+        }
+        if (Constant.pingInt2 > 1000) {
+            binding.totalGameSpeed.text = ">1000ms"
+
+        } else {
+            binding.totalGameSpeed.text = "${Constant.pingInt2}ms"
+        }
+        if (Constant.pingInt3 > 1000) {
+            binding.cnSpeed.text = ">1000ms"
+        } else {
+            binding.cnSpeed.text = "${Constant.pingInt3}ms"
+
+        }
         initView()
         binding.arrowBack.setOnClickListener {
             finish()
@@ -126,7 +142,7 @@ class NetworkTestActivity : BaseActivity<ActivityNetworkTestBinding>() {
         val wifiInfo = wifiManager.connectionInfo
         if (wifiInfo != null) {
             val history =
-                wifiInfo?.ssid?.let {
+                wifiInfo.ssid?.let {
                     HistoryEntity(
                         it,
                         DateUtil().getTime(),

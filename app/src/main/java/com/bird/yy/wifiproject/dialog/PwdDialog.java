@@ -79,7 +79,7 @@ public class PwdDialog extends Dialog {
         Log.d("xxxxxx","load3333");
         if (frameLayout != null) {
             Log.d("xxxxxx","load4444");
-            new AdManage().showAd(activity, Constant.adNative_wifi_h,
+            new AdManage().showAd(activity, Constant.adNative_wifi_p,
                     adBean,
                     frameLayout, new AdManage.OnShowAdCompleteListener() {
                         @Override

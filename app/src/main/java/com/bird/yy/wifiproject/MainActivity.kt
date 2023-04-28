@@ -123,7 +123,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnWifiScanResultsListe
         }
 //        initData()
         initListener()
-        loadNativeAd()
     }
 
     @SuppressLint("MissingPermission")
@@ -132,6 +131,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnWifiScanResultsListe
         wiFiManagerNew.setOnWifiEnabledListener(this)
         wiFiManagerNew.setOnWifiScanResultsListener(this)
         wiFiManagerNew.setOnWifiConnectListener(this)
+        loadNativeAd()
     }
 
     override fun onPause() {
