@@ -73,4 +73,5 @@ abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity() {
             .create()
         alertDialog.show()
     }
+
 }

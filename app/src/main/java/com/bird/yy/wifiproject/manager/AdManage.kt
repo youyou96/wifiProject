@@ -6,8 +6,8 @@ import android.view.View
 import android.widget.FrameLayout
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
-import com.bird.yy.wifiproject.databinding.ActivityMainBinding
 import com.bird.yy.wifiproject.databinding.AdViewResultBinding
+import com.bird.yy.wifiproject.databinding.AdViewWifiBinding
 import com.bird.yy.wifiproject.entity.AdBean
 import com.bird.yy.wifiproject.entity.AdResourceBean
 import com.bird.yy.wifiproject.entity.AdTimeBean
@@ -22,7 +22,10 @@ import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.gms.ads.nativead.NativeAd
 import com.google.android.gms.ads.nativead.NativeAdOptions
 import com.google.gson.Gson
+import timber.log.Timber
+
 private const val LOG_TAG = "AdManage"
+
 class AdManage {
     fun loadAd(
         adType: String,
@@ -37,6 +40,8 @@ class AdManage {
         if (adResourceBeanJson == null || adResourceBeanJson.isEmpty()) {
             adResourceBeanJson = EntityUtils().obtainNativeJsonData(context, "ad.json").toString()
             SPUtils.get().putString(Constant.adResourceBean, adResourceBeanJson)
+            Timber.tag("RemoteConfig").d(" adManage put adResourceBean")
+
         }
         val adResourceBean =
             Gson().fromJson(adResourceBeanJson, AdResourceBean::class.java) ?: return
@@ -45,29 +50,39 @@ class AdManage {
             return
         }
         when (adType) {
-            Constant.adOpen -> {
+            Constant.adOpen_wifi -> {
                 val adBeanList = adResourceBean.serpac_o_open
                 adBeanList.sortByDescending { it.serpac_pri }
                 loadAd(adType, 0, adBeanList, context, onLoadAdCompleteListener)
             }
-            Constant.adInterstitial_r -> {
-                val adBeanList = adResourceBean.serpac_i_2R
-                adBeanList.sortByDescending { it.serpac_pri }
-                loadAd(adType, 0, adBeanList, context, onLoadAdCompleteListener)
-            }
-            Constant.adInterstitial_h -> {
+//            Constant.adInterstitial_r -> {
+//                val adBeanList = adResourceBean.serpac_i_2R
+//                adBeanList.sortByDescending { it.serpac_pri }
+//                loadAd(adType, 0, adBeanList, context, onLoadAdCompleteListener)
+//            }
+            Constant.adInterstitial_wifi -> {
                 val adBeanList = adResourceBean.serpac_i_2H
                 adBeanList.sortByDescending { it.serpac_pri }
                 loadAd(adType, 0, adBeanList, context, onLoadAdCompleteListener)
 
             }
-            Constant.adNative_vpn_h -> {
+            Constant.adNative_wifi_h -> {
                 val adBeanList = adResourceBean.serpac_n_home
                 adBeanList.sortByDescending { it.serpac_pri }
                 loadAd(adType, 0, adBeanList, context, onLoadAdCompleteListener)
             }
-            Constant.adNative_r -> {
+            Constant.adNative_wifi_s -> {
                 val adBeanList = adResourceBean.serpac_n_result
+                adBeanList.sortByDescending { it.serpac_pri }
+                loadAd(adType, 0, adBeanList, context, onLoadAdCompleteListener)
+            }
+            Constant.adNative_wifi_p -> {
+                val adBeanList = adResourceBean.serpac_n_connect
+                adBeanList.sortByDescending { it.serpac_pri }
+                loadAd(adType, 0, adBeanList, context, onLoadAdCompleteListener)
+            }
+            Constant.adNative_wifi_history -> {
+                val adBeanList = adResourceBean.serpac_n_history
                 adBeanList.sortByDescending { it.serpac_pri }
                 loadAd(adType, 0, adBeanList, context, onLoadAdCompleteListener)
             }
@@ -202,6 +217,7 @@ class AdManage {
                         "请求广告成功 优先级： ${adBean?.serpac_pri}   广告ID： ${adBean?.serpac_id} 广告location: ${adType}"
                     )
                     adBean.ad = ad
+                    adBean.saveTime = System.currentTimeMillis()
                     Constant.AdMap[adType] = adBean
                     onLoadAdCompleteListener.onLoadAdComplete(adBean)
                 }
@@ -245,6 +261,7 @@ class AdManage {
 
                 override fun onAdLoaded(ad: InterstitialAd) {
                     adBean.ad = ad
+                    adBean.saveTime = System.currentTimeMillis()
                     Constant.AdMap[adType] = adBean
                     Log.e(
                         LOG_TAG,
@@ -272,12 +289,12 @@ class AdManage {
                 "广告加载成功  优先级： ${adBean.serpac_pri}   广告ID： ${adBean.serpac_id} 广告位：${adType}"
             )
             adBean.ad = nativeAd
+            adBean.saveTime = System.currentTimeMillis()
             Constant.AdMap[adType] = adBean
             onLoadAdCompleteListener.onLoadAdComplete(adBean)
 
         }
-        val location =
-            if (adType == Constant.adNative_vpn_h) NativeAdOptions.ADCHOICES_TOP_RIGHT else NativeAdOptions.ADCHOICES_TOP_LEFT
+        val location = NativeAdOptions.ADCHOICES_TOP_RIGHT
         val adLoader =
             builder
                 .withAdListener(
@@ -444,48 +461,40 @@ class AdManage {
         }
 
 
-        val adViewResultBinding = AdViewResultBinding.inflate(activity.layoutInflater)
-        populateNativeAdView(nativeAd, adViewResultBinding, adType)
+        val adViewWifiBinding = AdViewWifiBinding.inflate(activity.layoutInflater)
+        populateNativeAdView(nativeAd, adViewWifiBinding, adType)
         frameLayout?.removeAllViews()
-        frameLayout?.addView(adViewResultBinding.root)
+        frameLayout?.addView(adViewWifiBinding.root)
         Constant.AdMap[adType]?.ad = null
         AdManage().loadAd(adType, activity)
     }
 
     private fun populateNativeAdView(
         nativeAd: NativeAd,
-        adViewResultBinding: AdViewResultBinding,
+        adViewResultBinding: AdViewWifiBinding,
         adType: String
     ) {
         Log.e(LOG_TAG, "show native ad ing")
         adViewResultBinding.run {
             val nativeAdView = adViewResultBinding.root
-            nativeAdView.mediaView = adViewResultBinding.adMedia
 
             nativeAdView.headlineView = adViewResultBinding.adHeadline
             nativeAdView.bodyView = adViewResultBinding.adContent
             nativeAdView.callToActionView = adViewResultBinding.adCallToAction
             nativeAdView.iconView = adViewResultBinding.adAppIcon
-
-            if (nativeAd.mediaContent?.mainImage != null) {
-                adViewResultBinding.adMedia.mediaContent = nativeAd.mediaContent
-            } else {
-                Log.e(LOG_TAG, "nativeAd mediaContent mainImage ==null")
-            }
-            nativeAd.mediaContent?.let { adViewResultBinding.adMedia.mediaContent = it }
             if (nativeAd.callToAction == null) {
                 adViewResultBinding.adCallToAction.visibility = View.INVISIBLE
             } else {
                 adViewResultBinding.adCallToAction.visibility = View.VISIBLE
 //            adCallToAction.text = nativeAd.callToAction
             }
-            if (adType == Constant.adNative_vpn_h) {
-                adViewResultBinding.homeAdLabel.visibility = View.VISIBLE
-                adViewResultBinding.resultAdLabel.visibility = View.GONE
-            } else {
-                adViewResultBinding.resultAdLabel.visibility = View.VISIBLE
-                adViewResultBinding.homeAdLabel.visibility = View.GONE
-            }
+//            if (adType == Constant.adNative_vpn_h) {
+//                adViewResultBinding.homeAdLabel.visibility = View.VISIBLE
+//                adViewResultBinding.resultAdLabel.visibility = View.GONE
+//            } else {
+//                adViewResultBinding.resultAdLabel.visibility = View.VISIBLE
+//                adViewResultBinding.homeAdLabel.visibility = View.GONE
+//            }
             val adAppIcon = adViewResultBinding.adAppIcon
 
             val adContent = adViewResultBinding.adContent
@@ -598,4 +607,5 @@ class AdManage {
         fun onShowAdComplete()
         fun isMax()
     }
+
 }

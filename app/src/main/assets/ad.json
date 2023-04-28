@@ -1,9 +1,9 @@
 {
-  "serpac_sm": 30,
-  "serpac_cm": 2,
+  "serpac_sm": 50,
+  "serpac_cm": 1,
   "serpac_o_open": [
     {
-      "serpac_id": "ca-app-pub-3940256099942544/3419835294mm",
+      "serpac_id": "ca-app-pub-3940256099942544/3419835294",
       "serpac_source": "admob",
       "serpac_type": "open",
       "serpac_pri": 2
@@ -15,9 +15,9 @@
       "serpac_pri": 3
     },
     {
-      "serpac_id": "ca-app-pub-3940256099942544/3419835294",
+      "serpac_id": "ca-app-pub-3940256099942544/1033173712",
       "serpac_source": "admob",
-      "serpac_type": "open",
+      "serpac_type": "inter",
       "serpac_pri": 1
     }
   ],
@@ -29,13 +29,13 @@
       "serpac_pri": 3
     },
     {
-      "serpac_id": "ca-app-pub-3940256099942544/2247696110",
+      "serpac_id": "ca-app-pub-3940256099942544/1044960115",
       "serpac_source": "admob",
       "serpac_type": "native",
       "serpac_pri": 1
     },
     {
-      "serpac_id": "ca-app-pub-3940256099942544/2247696110mm",
+      "serpac_id": "ca-app-pub-3940256099942544/2247696110",
       "serpac_source": "admob",
       "serpac_type": "native",
       "serpac_pri": 2
@@ -49,7 +49,7 @@
       "serpac_pri": 1
     },
     {
-      "serpac_id": "ca-app-pub-3940256099942544/2247696110m",
+      "serpac_id": "ca-app-pub-3940256099942544/1044960115",
       "serpac_source": "admob",
       "serpac_type": "native",
       "serpac_pri": 2
@@ -61,24 +61,44 @@
       "serpac_pri": 3
     }
   ],
-  "serpac_i_2R": [
+  "serpac_n_connect": [
     {
-      "serpac_id": "ca-app-pub-3940256099942544/1033173712nn",
+      "serpac_id": "ca-app-pub-3940256099942544/1044960115",
       "serpac_source": "admob",
-      "serpac_type": "inter",
-      "serpac_pri": 3
-    },
-    {
-      "serpac_id": "ca-app-pub-3940256099942544/1033173712",
-      "serpac_source": "admob",
-      "serpac_type": "inter",
+      "serpac_type": "native",
       "serpac_pri": 1
     },
     {
-      "serpac_id": "ca-app-pub-3940256099942544/1033173712n",
+      "serpac_id": "ca-app-pub-3940256099942544/2247696110",
       "serpac_source": "admob",
-      "serpac_type": "inter",
+      "serpac_type": "native",
       "serpac_pri": 2
+    },
+    {
+      "serpac_id": "ca-app-pub-3940256099942544/2247696110nn",
+      "serpac_source": "admob",
+      "serpac_type": "native",
+      "serpac_pri": 3
+    }
+  ],
+  "serpac_n_history": [
+    {
+      "serpac_id": "ca-app-pub-3940256099942544/1044960115",
+      "serpac_source": "admob",
+      "serpac_type": "native",
+      "serpac_pri": 1
+    },
+    {
+      "serpac_id": "ca-app-pub-3940256099942544/2247696110",
+      "serpac_source": "admob",
+      "serpac_type": "native",
+      "serpac_pri": 2
+    },
+    {
+      "serpac_id": "ca-app-pub-3940256099942544/2247696110nn",
+      "serpac_source": "admob",
+      "serpac_type": "native",
+      "serpac_pri": 3
     }
   ],
   "serpac_i_2H": [
@@ -95,7 +115,7 @@
       "serpac_pri": 1
     },
     {
-      "serpac_id": "ca-app-pub-3940256099942544/1033173712k",
+      "serpac_id": "ca-app-pub-3940256099942544/8691691433",
       "serpac_source": "admob",
       "serpac_type": "inter",
       "serpac_pri": 2

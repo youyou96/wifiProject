@@ -8,15 +8,22 @@ import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.os.Process
+import android.util.Log
+import android.view.View.OnClickListener
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.ProcessLifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import androidx.multidex.MultiDexApplication
 import com.bird.yy.wifiproject.MainActivity
+import com.bird.yy.wifiproject.activity.ActivityHistory
 import com.bird.yy.wifiproject.activity.FlashActivity
+import com.bird.yy.wifiproject.activity.SecurityActivity
 import com.bird.yy.wifiproject.activity.VpnHomeActivity
+import com.bird.yy.wifiproject.entity.AdBean
 import com.bird.yy.wifiproject.manager.ActivityManager
 import com.bird.yy.wifiproject.manager.AdManage
 import com.bird.yy.wifiproject.utils.Constant
+import com.bird.yy.wifiproject.utils.EntityUtils
 import com.bird.yy.wifiproject.utils.SPUtils
 import com.github.shadowsocks.Core
 import com.google.android.gms.ads.AdActivity
@@ -30,7 +37,11 @@ import com.lzy.okgo.https.HttpsUtils
 
 
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
 import okhttp3.OkHttpClient
+import timber.log.Timber
 
 import java.util.concurrent.TimeUnit
 
@@ -54,19 +65,15 @@ class BaseApplication : MultiDexApplication(), Application.ActivityLifecycleCall
         Constant.isShowLead = true
         if (applicationContext.packageName.equals(getCurrentProcessName())) {
             MobileAds.initialize(this)
+            Constant.coldStart = true
             initOkGo()
             SPUtils.get().init(this)
             SPUtils.get().putString(Constant.iR, "")
-            Constant.AdMap[Constant.adNative_wifi_n]?.ad = null
+            SPUtils.get().putString(Constant.adResourceBean, "")
             Constant.AdMap[Constant.adNative_wifi_s]?.ad = null
             Constant.AdMap[Constant.adNative_wifi_p]?.ad = null
             Constant.AdMap[Constant.adNative_wifi_h]?.ad = null
             Constant.AdMap[Constant.adNative_wifi_history]?.ad = null
-            Constant.AdMap[Constant.adNative_vpn_h]?.ad = null
-            Constant.AdMap[Constant.adNative_r]?.ad = null
-            Constant.AdMap[Constant.adInterstitial_h]?.ad = null
-            Constant.AdMap[Constant.adInterstitial_r]?.ad = null
-            loadingData()
             registerActivityLifecycleCallbacks(this)
 
             // Log the Mobile Ads SDK version.
@@ -74,26 +81,46 @@ class BaseApplication : MultiDexApplication(), Application.ActivityLifecycleCall
         }
     }
 
-    private fun loadingData() {
+     private fun loadingData() {
         //load ad
-        val adBeanNativeH = Constant.AdMap[Constant.adNative_vpn_h]
-        if (adBeanNativeH != null) {
-            val time = System.currentTimeMillis() - adBeanNativeH.saveTime
-            if (time > Constant.timeOut || adBeanNativeH.ad == null) {
-                AdManage().loadAd(Constant.adNative_vpn_h, this)
-            }
-        }else{
-            AdManage().loadAd(Constant.adNative_vpn_h, this)
-        }
-
+         Timber.tag("RemoteConfig").d(" application put adResourceBean")
         val adBeanNativeWifiH = Constant.AdMap[Constant.adNative_wifi_h]
         if (adBeanNativeWifiH != null) {
             val time = System.currentTimeMillis() - adBeanNativeWifiH.saveTime
+            Timber.tag("RemoteConfig").d(" application put adResourceBean ${adBeanNativeWifiH.saveTime}")
             if (time > Constant.timeOut || adBeanNativeWifiH.ad == null) {
-                AdManage().loadAd(Constant.adNative_wifi_h, this)
+                AdManage().loadAd(
+                    Constant.adNative_wifi_h,
+                    this,
+                    object : AdManage.OnLoadAdCompleteListener {
+                        override fun onLoadAdComplete(ad: AdBean?) {
+                            if (currActivity != null && currActivity is MainActivity) {
+                                if (ad?.ad != null) {
+                                    (currActivity as MainActivity).showNativeAd(ad)
+                                }
+                            }
+                        }
+
+                        override fun isMax() {
+                        }
+
+                    })
             }
-        }else{
-            AdManage().loadAd(Constant.adNative_wifi_h, this)
+        } else {
+            AdManage().loadAd(Constant.adNative_wifi_h, this,
+                object : AdManage.OnLoadAdCompleteListener {
+                    override fun onLoadAdComplete(ad: AdBean?) {
+                        if (currActivity != null && currActivity is MainActivity) {
+                            if (ad?.ad != null) {
+                                (currActivity as MainActivity).showNativeAd(ad)
+                            }
+                        }
+                    }
+
+                    override fun isMax() {
+                    }
+
+                })
         }
 
 
@@ -101,72 +128,118 @@ class BaseApplication : MultiDexApplication(), Application.ActivityLifecycleCall
         if (adBeanNativeWifiPwd != null) {
             val time = System.currentTimeMillis() - adBeanNativeWifiPwd.saveTime
             if (time > Constant.timeOut || adBeanNativeWifiPwd.ad == null) {
-                AdManage().loadAd(Constant.adNative_wifi_p, this)
+                AdManage().loadAd(Constant.adNative_wifi_p, this,
+                    object : AdManage.OnLoadAdCompleteListener {
+                        override fun onLoadAdComplete(ad: AdBean?) {
+//                            if (currActivity != null && currActivity is MainActivity && (currActivity as MainActivity).isPwdShow) {
+//                                if (ad?.ad != null) {
+//                                    (currActivity as MainActivity).showNativePwdAd(ad)
+//                                }
+//                            }
+                        }
+
+                        override fun isMax() {
+                        }
+
+                    })
             }
-        }else{
-            AdManage().loadAd(Constant.adNative_wifi_p, this)
+        } else {
+            AdManage().loadAd(Constant.adNative_wifi_p, this,
+                object : AdManage.OnLoadAdCompleteListener {
+                    override fun onLoadAdComplete(ad: AdBean?) {
+//                        if (currActivity != null && currActivity is MainActivity && (currActivity as MainActivity).isPwdShow) {
+//                            if (ad?.ad != null) {
+//                                (currActivity as MainActivity).showNativePwdAd(ad)
+//                            }
+//                        }
+                    }
+
+                    override fun isMax() {
+                    }
+
+                })
         }
 
         val adBeanNativeWifiHistory = Constant.AdMap[Constant.adNative_wifi_history]
         if (adBeanNativeWifiHistory != null) {
             val time = System.currentTimeMillis() - adBeanNativeWifiHistory.saveTime
             if (time > Constant.timeOut || adBeanNativeWifiHistory.ad == null) {
-                AdManage().loadAd(Constant.adNative_wifi_history, this)
+                AdManage().loadAd(Constant.adNative_wifi_history, this,
+                    object : AdManage.OnLoadAdCompleteListener {
+                        override fun onLoadAdComplete(ad: AdBean?) {
+                            if (currActivity != null && currActivity is ActivityHistory) {
+                                if (ad?.ad != null) {
+                                    (currActivity as ActivityHistory).showNativeAd(ad)
+                                }
+                            }
+                        }
+
+                        override fun isMax() {
+                        }
+
+                    })
             }
-        }else{
-            AdManage().loadAd(Constant.adNative_wifi_history, this)
+        } else {
+            AdManage().loadAd(Constant.adNative_wifi_history, this,
+                object : AdManage.OnLoadAdCompleteListener {
+                    override fun onLoadAdComplete(ad: AdBean?) {
+                        if (currActivity != null && currActivity is ActivityHistory) {
+                            if (ad?.ad != null) {
+                                (currActivity as ActivityHistory).showNativeAd(ad)
+                            }
+                        }
+                    }
+
+                    override fun isMax() {
+                    }
+
+                })
         }
         val adBeanNativeWifiS = Constant.AdMap[Constant.adNative_wifi_s]
         if (adBeanNativeWifiS != null) {
             val time = System.currentTimeMillis() - adBeanNativeWifiS.saveTime
             if (time > Constant.timeOut || adBeanNativeWifiS.ad == null) {
-                AdManage().loadAd(Constant.adNative_wifi_s, this)
+                AdManage().loadAd(Constant.adNative_wifi_s, this,
+                    object : AdManage.OnLoadAdCompleteListener {
+                        override fun onLoadAdComplete(ad: AdBean?) {
+                            if (currActivity != null && currActivity is SecurityActivity) {
+                                if (ad?.ad != null) {
+                                    (currActivity as SecurityActivity).showNativeAd(ad)
+                                }
+                            }
+                        }
+
+                        override fun isMax() {
+                        }
+
+                    })
             }
-        }else{
-            AdManage().loadAd(Constant.adNative_wifi_s, this)
+        } else {
+            AdManage().loadAd(Constant.adNative_wifi_s, this,
+                object : AdManage.OnLoadAdCompleteListener {
+                    override fun onLoadAdComplete(ad: AdBean?) {
+                        if (currActivity != null && currActivity is SecurityActivity) {
+                            if (ad?.ad != null) {
+                                (currActivity as SecurityActivity).showNativeAd(ad)
+                            }
+                        }
+                    }
+
+                    override fun isMax() {
+                    }
+
+                })
         }
 
-
-        val adBeanNativeWifiN = Constant.AdMap[Constant.adNative_wifi_n]
-        if (adBeanNativeWifiN != null) {
-            val time = System.currentTimeMillis() - adBeanNativeWifiN.saveTime
-            if (time > Constant.timeOut || adBeanNativeWifiN.ad == null) {
-                AdManage().loadAd(Constant.adNative_wifi_n, this)
+        val adBeanInter = Constant.AdMap[Constant.adInterstitial_wifi]
+        if (adBeanInter != null) {
+            val time = System.currentTimeMillis() - adBeanInter.saveTime
+            if (time > Constant.timeOut || adBeanInter.ad == null) {
+                AdManage().loadAd(Constant.adInterstitial_wifi, this)
             }
-        }else{
-            AdManage().loadAd(Constant.adNative_wifi_n, this)
+        } else {
+            AdManage().loadAd(Constant.adInterstitial_wifi, this)
         }
-
-        val adBeanNativeR = Constant.AdMap[Constant.adNative_r]
-        if (adBeanNativeR != null) {
-            val time = System.currentTimeMillis() - adBeanNativeR.saveTime
-            if (time > Constant.timeOut || adBeanNativeR.ad == null) {
-                AdManage().loadAd(Constant.adNative_r, this)
-            }
-        }else{
-            AdManage().loadAd(Constant.adNative_r, this)
-        }
-
-        val adBeanInterH = Constant.AdMap[Constant.adInterstitial_h]
-        if (adBeanInterH != null) {
-            val time = System.currentTimeMillis() - adBeanInterH.saveTime
-            if (time > Constant.timeOut || adBeanInterH.ad == null) {
-                AdManage().loadAd(Constant.adInterstitial_h, this)
-            }
-        }else{
-            AdManage().loadAd(Constant.adInterstitial_h, this)
-        }
-
-        val adBeanInterR = Constant.AdMap[Constant.adInterstitial_r]
-        if (adBeanInterR != null) {
-            val time = System.currentTimeMillis() - adBeanInterR.saveTime
-            if (time > Constant.timeOut || adBeanInterR.ad == null) {
-                AdManage().loadAd(Constant.adInterstitial_r, this)
-            }
-        }else{
-            AdManage().loadAd(Constant.adInterstitial_r, this)
-        }
-
 
     }
 
@@ -218,7 +291,8 @@ class BaseApplication : MultiDexApplication(), Application.ActivityLifecycleCall
         OkGo.getInstance().init(this) //必须调用初始化
             .setOkHttpClient(builder.build()) //建议设置OkHttpClient，不设置会使用默认的
             .setCacheMode(CacheMode.NO_CACHE) //全局统一缓存模式，默认不使用缓存，可以不传
-            .setCacheTime(CacheEntity.CACHE_NEVER_EXPIRE).retryCount = 3 //全局统一超时重连次数，默认为三次，那么最差的情况会请求4次(一次原始请求，三次重连请求)，不需要可以设置为0
+            .setCacheTime(CacheEntity.CACHE_NEVER_EXPIRE).retryCount =
+            3 //全局统一超时重连次数，默认为三次，那么最差的情况会请求4次(一次原始请求，三次重连请求)，不需要可以设置为0
     }
 
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
@@ -234,8 +308,9 @@ class BaseApplication : MultiDexApplication(), Application.ActivityLifecycleCall
                 bgFlag = false
                 activity.startActivity(Intent(activity, FlashActivity::class.java))
                 SPUtils.get().putBoolean(Constant.isShowResultKey, false)
+                Constant.coldStart = false
                 loadingData()
-                if (activity is MainActivity){
+                if (activity is MainActivity) {
                     activity.finish()
                 }
             }
@@ -269,4 +344,6 @@ class BaseApplication : MultiDexApplication(), Application.ActivityLifecycleCall
     override fun onActivityDestroyed(activity: Activity) {
         getActivityManager().removeActivity(activity)
     }
+
+
 }

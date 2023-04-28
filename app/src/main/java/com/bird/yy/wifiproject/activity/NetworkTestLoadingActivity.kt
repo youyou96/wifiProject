@@ -10,7 +10,9 @@ import androidx.lifecycle.lifecycleScope
 import com.bird.yy.wifiproject.R
 import com.bird.yy.wifiproject.base.BaseActivity
 import com.bird.yy.wifiproject.databinding.ActivitySecurityLoadingBinding
+import com.bird.yy.wifiproject.entity.AdBean
 import com.bird.yy.wifiproject.entity.HistoryEntity
+import com.bird.yy.wifiproject.manager.AdManage
 import com.bird.yy.wifiproject.utils.Constant
 import com.bird.yy.wifiproject.utils.DateUtil
 import com.bird.yy.wifiproject.utils.InterNetUtil
@@ -31,6 +33,7 @@ class NetworkTestLoadingActivity : BaseActivity<ActivitySecurityLoadingBinding>(
     private var isSpeed = false
     private var wifiInfo: WifiInfo? = null
     private lateinit var wifiManager: WifiManager
+    private var isShowInter = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
@@ -118,28 +121,17 @@ class NetworkTestLoadingActivity : BaseActivity<ActivitySecurityLoadingBinding>(
 
             }.onCompletion {
                 //finish
-                if (isSpeed){
-                    jumpActivityFinish(NetworkTestActivity::class.java)
-
-                }else{
-                    jumpActivityFinish(SecurityActivity::class.java)
-
+                Log.d("AdManage", "xxxxxxx")
+                if (!isShowInter) {
+                    jumpActivity()
                 }
-
             }.collect {
                 //process
                 if (num >= 3) {
-                    if (isSpeed) {
-                        if (Constant.report != null) {
-                            if (Constant.pingInt1 != 0 && Constant.pingInt2 != 0 && Constant.pingInt3 != 0 && Constant.report != null) {
-                                jumpActivityFinish(NetworkTestActivity::class.java)
-
-                            }
-                        }
-                    } else {
-                        if (Constant.report != null) {
-                            if (Constant.pingInt1 != 0 && Constant.pingInt2 != 0 && Constant.pingInt3 != 0 && Constant.report != null) {
-                                jumpActivityFinish(SecurityActivity::class.java)
+                    if (Constant.report != null) {
+                        if (Constant.pingInt1 != 0 && Constant.pingInt2 != 0 && Constant.pingInt3 != 0 && Constant.report != null) {
+                            lifecycleScope.launch(Dispatchers.Main) {
+                                loadInterAd()
                             }
                         }
                     }
@@ -151,5 +143,88 @@ class NetworkTestLoadingActivity : BaseActivity<ActivitySecurityLoadingBinding>(
     override fun onDestroy() {
         super.onDestroy()
         connectionJob?.cancel()
+    }
+
+    private fun loadInterAd() {
+        val adBeanInter = Constant.AdMap[Constant.adInterstitial_wifi]
+        if (adBeanInter != null) {
+            val time = System.currentTimeMillis() - adBeanInter.saveTime
+            if (time > Constant.timeOut || adBeanInter.ad == null) {
+                AdManage().loadAd(
+                    Constant.adInterstitial_wifi,
+                    this,
+                    object : AdManage.OnLoadAdCompleteListener {
+                        override fun onLoadAdComplete(ad: AdBean?) {
+                            if (ad?.ad != null) {
+                                connectionJob?.cancel()
+                                showInterAd(ad)
+                            }
+                        }
+
+                        override fun isMax() {
+                            connectionJob?.cancel()
+                            isShowInter = true
+                            Log.d("AdManage", "xxxxxxx111111")
+                            jumpActivity()
+                        }
+
+                    })
+            } else {
+                connectionJob?.cancel()
+                showInterAd(adBeanInter)
+            }
+        } else {
+            AdManage().loadAd(
+                Constant.adInterstitial_wifi,
+                this,
+                object : AdManage.OnLoadAdCompleteListener {
+                    override fun onLoadAdComplete(ad: AdBean?) {
+                        if (ad?.ad != null) {
+                            connectionJob?.cancel()
+                            showInterAd(ad)
+                        }
+                    }
+
+                    override fun isMax() {
+                        isShowInter = true
+                        connectionJob?.cancel()
+                        Log.d("AdManage", "xxxxxxx222222")
+                        jumpActivity()
+                    }
+
+                })
+        }
+    }
+
+    private fun showInterAd(adBean: AdBean) {
+        isShowInter = true
+        AdManage().showAd(
+            this,
+            Constant.adInterstitial_wifi,
+            adBean,
+            null,
+            object : AdManage.OnShowAdCompleteListener {
+                override fun onShowAdComplete() {
+                    Log.d("AdManage", "xxxxxxx333333")
+                    jumpActivity()
+                }
+
+                override fun isMax() {
+                    Log.d("AdManage", "xxxxxxx555555")
+                    jumpActivity()
+                }
+
+            })
+    }
+
+    private fun jumpActivity() {
+        lifecycleScope.launch(Dispatchers.Main) {
+            if (isSpeed) {
+                jumpActivityFinish(NetworkTestActivity::class.java)
+
+            } else {
+                jumpActivityFinish(SecurityActivity::class.java)
+            }
+        }
     }
 }

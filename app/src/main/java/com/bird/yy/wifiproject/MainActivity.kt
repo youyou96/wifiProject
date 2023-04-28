@@ -23,12 +23,14 @@ import androidx.core.net.toUri
 import com.bird.yy.wifiproject.activity.ActivityHistory
 import com.bird.yy.wifiproject.activity.NetworkTestLoadingActivity
 import com.bird.yy.wifiproject.activity.PrivacyPolicyWebView
-import com.bird.yy.wifiproject.activity.VpnLeadActivity
 import com.bird.yy.wifiproject.adapter.WIFIAdapter
 import com.bird.yy.wifiproject.base.BaseActivity
+import com.bird.yy.wifiproject.base.BaseWiFiManager
 import com.bird.yy.wifiproject.databinding.ActivityMainBinding
 import com.bird.yy.wifiproject.dialog.PwdDialog
 import com.bird.yy.wifiproject.entity.AdBean
+import com.bird.yy.wifiproject.entity.Country
+import com.bird.yy.wifiproject.entity.MessageEvent
 import com.bird.yy.wifiproject.entity.WIFIEntity
 import com.bird.yy.wifiproject.listener.OnWifiConnectListener
 import com.bird.yy.wifiproject.listener.OnWifiEnabledListener
@@ -36,9 +38,18 @@ import com.bird.yy.wifiproject.listener.OnWifiScanResultsListener
 import com.bird.yy.wifiproject.manager.AdManage
 import com.bird.yy.wifiproject.manager.WiFiManagerNew
 import com.bird.yy.wifiproject.utils.Constant
+import com.bird.yy.wifiproject.utils.EntityUtils
 import com.bird.yy.wifiproject.utils.SPUtils
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
+import timber.log.Timber
 
 
 const val TAG = "MainActivity"
@@ -52,6 +63,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnWifiScanResultsListe
     private val networkBroadcastReceiver = WiFiManagerNew.NetworkBroadcastReceiver()
     private var connectivityManager: ConnectivityManager? = null
     private var chooseWifiInfo: WIFIEntity? = null
+    var isPwdShow = false
 
     /* *******************************************************************************************/
 
@@ -93,6 +105,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnWifiScanResultsListe
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        EventBus.getDefault().register(this)
         connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
         binding.contentLayout.wifiRv.adapter = wifiAdapter
         wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
@@ -113,6 +126,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnWifiScanResultsListe
         loadNativeAd()
     }
 
+    @SuppressLint("MissingPermission")
     override fun onResume() {
         super.onResume()
         wiFiManagerNew.setOnWifiEnabledListener(this)
@@ -132,6 +146,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnWifiScanResultsListe
         super.onStart()
         initData()
     }
+
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @SuppressLint("ServiceCast")
     private fun initData() {
@@ -227,7 +242,12 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnWifiScanResultsListe
                     }
 
                     val pwdDialog =
-                        PwdDialog(this@MainActivity, wifiInfo.wifiSSID, wifiInfo.password)
+                        PwdDialog(
+                            this@MainActivity,
+                            wifiInfo.wifiSSID,
+                            wifiInfo.password,
+                            this@MainActivity
+                        )
                     pwdDialog.setConnectWifi { pwd ->
                         wifiInfo.password = pwd
                         Constant.wifiEntity = wifiInfo
@@ -335,12 +355,12 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnWifiScanResultsListe
             }
             jumpActivity(ActivityHistory::class.java)
         }
-        binding.contentLayout.vpnCl.setOnClickListener {
-            if (binding.drawerLayout.isOpen) {
-                return@setOnClickListener
-            }
-            jumpActivity(VpnLeadActivity::class.java)
-        }
+//        binding.contentLayout.vpnCl.setOnClickListener {
+//            if (binding.drawerLayout.isOpen) {
+//                return@setOnClickListener
+//            }
+//            jumpActivity(VpnLeadActivity::class.java)
+//        }
 //        binding.contentLayout.homeConnectedCl.setOnClickListener {
 //            if (binding.drawerLayout.isOpen || !wifiManager.isWifiEnabled) {
 //                return@setOnClickListener
@@ -425,7 +445,11 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnWifiScanResultsListe
                     Toast.makeText(applicationContext, "$SSID  connected", Toast.LENGTH_SHORT)
                         .show()
                 } else {
-                    Toast.makeText(applicationContext, "${chooseWifiInfo!!.wifiSSID}  connected fail", Toast.LENGTH_SHORT)
+                    Toast.makeText(
+                        applicationContext,
+                        "${chooseWifiInfo!!.wifiSSID}  connected fail",
+                        Toast.LENGTH_SHORT
+                    )
                         .show()
                 }
             }
@@ -507,8 +531,16 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnWifiScanResultsListe
         wifiAdapter.setNewData(wifiData)
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(event: MessageEvent) {
+        if (event.type != Constant.adNative_wifi_h) {
+            showNativeAd(event.adBean)
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
+        EventBus.getDefault().unregister(this)
         unregisterReceiver(networkBroadcastReceiver)
         connectivityManager?.run {
             bindProcessToNetwork(null)
@@ -519,26 +551,30 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnWifiScanResultsListe
             }
         }
     }
+
     private var adManage = AdManage()
     private fun loadNativeAd() {
         val adBean = Constant.AdMap[Constant.adNative_wifi_h]
-        if (adBean?.ad == null) {
-            adManage.loadAd(Constant.adNative_wifi_h, this, object : AdManage.OnLoadAdCompleteListener {
+        if (adBean == null) {
+            loadAd()
+        } else {
+            val time = System.currentTimeMillis() - adBean.saveTime
+            if (adBean.ad == null || time > Constant.timeOut) {
+                loadAd()
+            } else {
+                showNativeAd(adBean)
+            }
+        }
+    }
+
+    fun loadAd() {
+        adManage.loadAd(
+            Constant.adNative_wifi_h,
+            this,
+            object : AdManage.OnLoadAdCompleteListener {
                 override fun onLoadAdComplete(ad: AdBean?) {
                     if (ad?.ad != null) {
-                        adManage.showAd(
-                            this@MainActivity,
-                            Constant.adNative_wifi_h,
-                            ad,
-                            binding.contentLayout.homeAdFl,
-                            object : AdManage.OnShowAdCompleteListener {
-                                override fun onShowAdComplete() {
-                                }
-
-                                override fun isMax() {
-                                }
-
-                            })
+                        showNativeAd(ad)
                     }
                 }
 
@@ -546,21 +582,23 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), OnWifiScanResultsListe
 
                 }
             })
-        } else {
-            adManage.showAd(
-                this@MainActivity,
-                Constant.adNative_wifi_h,
-                adBean,
-                binding.contentLayout.homeAdFl,
-                object : AdManage.OnShowAdCompleteListener {
-                    override fun onShowAdComplete() {
-                    }
-
-                    override fun isMax() {
-
-                    }
-
-                })
-        }
     }
+
+    fun showNativeAd(ad: AdBean) {
+        adManage.showAd(
+            this@MainActivity,
+            Constant.adNative_wifi_h,
+            ad,
+            binding.contentLayout.homeAdFl,
+            object : AdManage.OnShowAdCompleteListener {
+                override fun onShowAdComplete() {
+                }
+
+                override fun isMax() {
+                }
+
+            })
+    }
+
+
 }

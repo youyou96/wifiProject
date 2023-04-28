@@ -87,14 +87,6 @@ public class BaseWiFiManager {
         if (TextUtils.isEmpty(ssid) || TextUtils.isEmpty(password)) {
             return -1;
         }
-//        List<WifiConfiguration> wifiConfigurationList = mWifiManager.getConfiguredNetworks();
-//        if (wifiConfigurationList != null && wifiConfigurationList.size() > 0) {
-//            for (WifiConfiguration item : wifiConfigurationList) {
-//                if (item.SSID.equals("\"" + ssid + "\"")) {
-//                    return item.networkId;
-//                }
-//            }
-//        }
         WifiConfiguration wifiNewConfiguration = createWifiInfo(ssid, password, 3);//使用wpa2的wifi加密方式
         int newNetworkId = mWifiManager.addNetwork(wifiNewConfiguration);
         return newNetworkId;

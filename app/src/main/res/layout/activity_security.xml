@@ -65,7 +65,6 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <FrameLayout
-            android:visibility="gone"
             android:id="@+id/ad_fl"
             android:layout_width="match_parent"
             android:layout_height="132dp"
@@ -80,7 +79,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="30dp"
             android:layout_marginEnd="16dp"
             android:background="@drawable/wifi_info_background"
             android:padding="24dp"
